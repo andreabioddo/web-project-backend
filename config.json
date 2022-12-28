@@ -1,0 +1,12 @@
+{
+    "database": {
+        "host": "localhost",
+        "user": "user_web",
+        "password": "12345678",
+        "db": "webtech21sessions"
+    },
+	"auth": {
+        "jwt_key": "secret",
+        "expiration": "1h"
+    }
+}
