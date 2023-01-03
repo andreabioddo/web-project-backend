@@ -3,7 +3,7 @@
         "host": "localhost",
         "user": "user_web",
         "password": "12345678",
-        "db": "webtech21sessions"
+        "db": "web_project"
     },
 	"auth": {
         "jwt_key": "secret",

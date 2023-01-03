@@ -13,8 +13,8 @@ app.use(bodyParser.json()); // support json encoded bodies
 
 const checkAuth = require('./check_auth');
 
-const loginRoutes = require('./login');
-app.use("/login", loginRoutes);
+const userRoute = require('./user');
+app.use("/user", userRoute);
 
 // get products for logged in user as a list of JSON entries
 app.get("/", (req, res) => {
@@ -22,24 +22,8 @@ app.get("/", (req, res) => {
     res.status(200).send("EX4: This is a database-backed application which uses JWT");
 });
 
-/**Method that run a query on pg and return a promise with the result of the query */
-function executeSelectQuery(sqlQuery) {
-    return new Promise((resolve, reject) => {
-        console.log("QUERY:" + sqlQuery);
-        pool.query(sqlQuery, (error, result) => {
-            if(error) {
-                reject(error);
-            } else {
-                resolve(result);
-            }
-        });
-    });
-}
 
-/** If the user is logged, return a list of id of the products*/
-app.get("/users",checkAuth, (req, res) => {
-    
-});
+
 
 let port = 3000;
 app.listen(port);

@@ -1,4 +1,5 @@
-let cfg = require('./config.json')
+let cfg = require('./config.json');
+let tool = require('./tools');
 const express = require('express');
 const router = express.Router();
 
