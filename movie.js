@@ -1,13 +1,11 @@
 let tool = require('./tools');
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-let cfg = require('./config.json');
 
 /** Return an array of users */
 router.get('/', (req, res) => {
     tool.executeQuery(
-        `SELECT * FROM users`
+        `SELECT * FROM movies`
     ).then((result) => {
         res.status(200).send(
             result.rows
@@ -21,7 +19,7 @@ router.get('/', (req, res) => {
 /** Return a json with the detail of the user with id=id given as param*/
 router.get('/:id', (req, res) => {
     tool.executeQuery(
-        `SELECT * FROM users WHERE id=${req.params.id}`
+        `SELECT * FROM movies WHERE id=${req.params.id}`
     ).then((result) => {
         res.status(200).send(
             result.rows[0]
@@ -33,16 +31,15 @@ router.get('/:id', (req, res) => {
 });
 
 /**Add an user taken the details from the body of the request. It return a message and the last id*/
-router.post('/registartion', (req, res) => {
+router.post('/add', (req, res) => {
     tool.executeQuery(
-        `INSERT INTO users (name, password, email, isadmin)
-        VALUES('${req.body.name}', '${req.body.password}', '${req.body.email}', '${req.body.isadmin}')`
+        `INSERT INTO movies (name, description, duration, age)
+        VALUES('${req.body.name}', '${req.body.description}', '${req.body.duration}', ${req.body.age}) 
+        RETURNING id`
     ).then((result) => {
-        const jwtToken = jwt.sign({user:req.body.email, isAdmin:req.body.isadmin}, cfg.auth.jwt_key, {expiresIn: cfg.auth.expiration});//create the token
-        req.headers.authorization = jwtToken;
         res.status(200).json({
-            message: "registartion successful",
-            login: jwtToken,
+            message: "new movie created",
+            lastId: result.rows[0].id
         });
     }).catch((err) => {
         console.log(err);

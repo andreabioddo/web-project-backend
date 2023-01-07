@@ -8,8 +8,8 @@ const pool = require('./pool.js');
 const jwt = require('jsonwebtoken');
 
 // login route creating/returning a token on successful login
-router.post('/', (req, res) => {
-    let query = `SELECT * FROM users WHERE login='${req.body.user}' AND password='${req.body.password}'`;
+router.get('/', (req, res) => {
+    let query = `SELECT * FROM users WHERE email='${req.body.email}' AND password='${req.body.password}'`;
     pool.query(query)
     .then (results => {
         let resultRows = results.rows;
@@ -18,10 +18,10 @@ router.post('/', (req, res) => {
                     "message":"Login failed",
                     "error": "Invalid credentials"
                 });
-
             } else {
                 let resultUser = resultRows[0];
-                const jwtToken = jwt.sign({user:resultUser.login}, cfg.auth.jwt_key, {expiresIn: cfg.auth.expiration});//create the token
+                console.log(resultUser);
+                const jwtToken = jwt.sign({user:resultUser.name, isAdmin:resultUser.isadmin}, cfg.auth.jwt_key, {expiresIn: cfg.auth.expiration});//create the token
                 req.headers.authorization = jwtToken;
                 res.status(200).json({
                     message: "login successful",

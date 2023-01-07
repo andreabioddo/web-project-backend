@@ -16,14 +16,23 @@ const checkAuth = require('./check_auth');
 const userRoute = require('./user');
 app.use("/user", userRoute);
 
+const movieRoute = require('./movie');
+app.use("/movie", movieRoute);
+
+const theaterRoute = require('./theater');
+app.use("/theater", theaterRoute);
+
+const loginRoute = require('./login');
+app.use("/login", loginRoute);
+
 // get products for logged in user as a list of JSON entries
-app.get("/", (req, res) => {
-	res.setHeader('Content-Type', 'text/html');
-    res.status(200).send("EX4: This is a database-backed application which uses JWT");
+app.get("/testuser", checkAuth.checkUser ,(req, res) => {
+    res.status(200).send("Everything is working!");
 });
 
-
-
+app.get("/testadmin", checkAuth.checkAdmin ,(req, res) => {
+    res.status(200).send("Everything is working!");
+});
 
 let port = 3000;
 app.listen(port);
