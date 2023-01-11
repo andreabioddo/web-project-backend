@@ -37,7 +37,7 @@ router.get('/:id', checkAuth.checkAdmin, (req, res) => {
 router.post('/register', (req, res) => {
     tool.executeQuery(
         `INSERT INTO users (name, password, email, isadmin)
-        VALUES('${req.body.name}', '${req.body.password}', '${req.body.email}', '${req.body.isadmin}')`
+        VALUES('${req.body.name}', '${req.body.password}', '${req.body.email}', 'false')`
     ).then((result) => {
         const jwtToken = jwt.sign({user:req.body.email, isAdmin:req.body.isadmin}, cfg.auth.jwt_key, {expiresIn: cfg.auth.expiration});//create the token
         req.headers.authorization = jwtToken;

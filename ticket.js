@@ -2,7 +2,7 @@ let tool = require('./tools');
 const express = require('express');
 const router = express.Router();
 
-/** Return an array of users */
+/** Return an array of tickets */
 router.get('/', (req, res) => {
     tool.executeQuery(
         `SELECT * FROM tickets as t

@@ -47,4 +47,56 @@ router.post('/add', (req, res) => {
     })
 });
 
+router.get('/show/:movieId', (req, res) => {
+    tool.executeQuery(
+        `SELECT s.id as showId, t.name as theaterName, t.id as theaterId, t.number_of_seats, s.date as date, s.time as time FROM shows as s
+        INNER JOIN theaters as t ON s.id_theater=t.id
+        INNER JOIN movies as m ON m.id=s.id_movie
+        WHERE m.id=${req.params.movieId}`
+    ).then((res1)=>{       
+        /*tool.executeQuery(
+            `SELECT count(id) as count FROM seats WHERE id_theater=${res1.rows[0].theaterId}`
+        ).catch((res2)=>{
+
+            console.log(res2);
+
+            let finalResult = res1.rows[0];
+            finalResult.seats_occuped = res2;*/
+            res.status(200).send(/*finalResult*/res1.rows);
+
+        /*})*/
+        
+        
+    }).catch((err) => {
+        console.log(err);
+        res.status(400).send(err);
+    })
+});
+
+/*router.get('/avaiableSeats/:showId', (req, res) => {
+    tool.executeQuery(
+        `SELECT s.id as showId, t.name as theaterName, t.id as theaterId, t.number_of_seats, s.date as date, s.time as time FROM shows as s
+        INNER JOIN theaters as t ON s.id_theater=t.id
+        INNER JOIN movies as m ON m.id=s.id_movie
+        WHERE s.id=${req.params.showId}`
+    ).then((result)=>{
+        tool.executeQuery(
+            `SELECT * FROM seats as s WHERE id_theater=${result.rows[0].theaterid}`
+        ).then((res1)=>{    
+            res.status(200).send(result.rows[0]);
+        }).catch((err) => {
+            console.log(err);
+            res.status(400).send(err);
+        })
+
+    }).catch((err) => {
+        console.log(err);
+        res.status(400).send(err);
+    })
+})*/
+
+
+
+
+
 module.exports = router;

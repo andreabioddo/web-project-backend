@@ -39,10 +39,15 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
     tool.executeQuery(
         `SELECT * FROM theaters WHERE id=${req.params.id}`
-    ).then((result) => {
-        res.status(200).send(
-            result.rows[0]
-        );
+    ).then((res1) => {
+        tool.executeQuery(
+            `SELECT * FROM seats WHERE id_theater=${req.params.id}`
+        ).then((res2)=>{
+            let finalResult = res1.rows[0];
+            finalResult.seats = res2.rows;
+            res.status(200).send(finalResult);
+        })
+
     }).catch((err) => {
         res.status(400).json({
             message: "error occurred",
@@ -174,7 +179,7 @@ router.put('/:theaterId/updateseat/:seatId', (req, res) => {
             });
             return;
         }
-        tool.executeQuery(`UPDATE seats SET  type='${req.body.type}', removable=${req.body.removale} WHERE id=${req.params.seatId} AND id_theater=${req.params.theaterId}`)
+        tool.executeQuery(`UPDATE seats SET  type='${req.body.type}', removable=${req.body.removable} WHERE id=${req.params.seatId} AND id_theater=${req.params.theaterId}`)
         .then((result)=>{
             res.status(200).json({
                 message:`seats with id=${req.params.seatId} and id_theater=${req.params.theaterId} UPDATED`
@@ -190,6 +195,16 @@ router.put('/:theaterId/updateseat/:seatId', (req, res) => {
             message: "error occurred",
             error: err
         });
+    })
+})
+
+
+router.get('/seats/:theaterId', (req, res) => {
+    console.log("HERE2");
+    tool.executeQuery(
+        `SELECT * FROM seats WHERE id_theater=${req.params.theaterId}`
+    ).then((res1)=>{
+        res.status(200).send(res1.rows);
     })
 })
 
