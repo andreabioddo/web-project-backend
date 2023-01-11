@@ -8,8 +8,11 @@ const pool = require('./pool.js');
 const jwt = require('jsonwebtoken');
 
 // login route creating/returning a token on successful login
-router.get('/', (req, res) => {
+router.post('/', (req, res) => {
     let query = `SELECT * FROM users WHERE email='${req.body.email}' AND password='${req.body.password}'`;
+    console.log("email: " + req.body.email);
+    console.log("passwd: " + req.body.password);
+
     pool.query(query)
     .then (results => {
         let resultRows = results.rows;

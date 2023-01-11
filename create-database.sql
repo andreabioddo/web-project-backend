@@ -1,7 +1,17 @@
+drop table hasfeature;
+drop table features;
+drop table tickets;
+drop table shows;
+drop table ratings;
+drop table movies;
+drop table seats;
+drop table theaters;
+drop table users;
+
 create table users(
     id serial primary key,
     name varchar(25) not null,
-    email varchar(25) not null,
+    email varchar(500) not null,
     password text not null,
     isadmin boolean default false not null,
     unique(email)
