@@ -73,17 +73,29 @@ router.get('/show/:movieId', (req, res) => {
     })
 });
 
-/*router.get('/avaiableSeats/:showId', (req, res) => {
+router.get('/detailseats/:showId', (req, res) => {
     tool.executeQuery(
         `SELECT s.id as showId, t.name as theaterName, t.id as theaterId, t.number_of_seats, s.date as date, s.time as time FROM shows as s
         INNER JOIN theaters as t ON s.id_theater=t.id
         INNER JOIN movies as m ON m.id=s.id_movie
         WHERE s.id=${req.params.showId}`
-    ).then((result)=>{
+    ).then((res1)=>{
         tool.executeQuery(
-            `SELECT * FROM seats as s WHERE id_theater=${result.rows[0].theaterid}`
-        ).then((res1)=>{    
-            res.status(200).send(result.rows[0]);
+            `SELECT s.* FROM shows AS sh INNER JOIN seats AS s on s.id_theater=sh.id_theater
+            WHERE sh.id=${req.params.showId} AND (s.id) NOT IN (select id_seat from tickets as t where t.id_show=sh.id)`
+        ).then((res2)=>{
+            tool.executeQuery(
+                `SELECT s.* FROM shows AS sh INNER JOIN seats AS s on s.id_theater=sh.id_theater
+                WHERE sh.id=${req.params.showId} AND (s.id) IN (select id_seat from tickets as t where t.id_show=sh.id)`
+            ).then((res3) => {
+                let finalResult = res1.rows[0];
+                finalResult['avaiable_seats']=res2.rows;
+                finalResult['occupied_seats']=res3.rows;
+                res.status(200).send(finalResult);
+            }).catch((err) => {
+                console.log(err);
+                res.status(400).send(err);
+            })
         }).catch((err) => {
             console.log(err);
             res.status(400).send(err);
@@ -93,7 +105,7 @@ router.get('/show/:movieId', (req, res) => {
         console.log(err);
         res.status(400).send(err);
     })
-})*/
+})
 
 
 

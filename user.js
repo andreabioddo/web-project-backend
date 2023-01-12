@@ -35,11 +35,18 @@ router.get('/:id', checkAuth.checkAdmin, (req, res) => {
 
 /**Add an user taken the details from the body of the request. It return a message and the last id*/
 router.post('/register', (req, res) => {
+    if(tool.checkSQLInjection(req.body.email) || tool.checkSQLInjection(req.body.password) || tool.checkSQLInjection(req.body.name)){
+        res.status(401).json({
+            "message":"Data invalid",
+            "error": "Data invalid"
+        });
+        return;
+    }
     tool.executeQuery(
         `INSERT INTO users (name, password, email, isadmin)
         VALUES('${req.body.name}', '${req.body.password}', '${req.body.email}', 'false')`
     ).then((result) => {
-        const jwtToken = jwt.sign({user:req.body.email, isAdmin:req.body.isadmin}, cfg.auth.jwt_key, {expiresIn: cfg.auth.expiration});//create the token
+        const jwtToken = jwt.sign({user:req.body.email, isAdmin:false}, cfg.auth.jwt_key, {expiresIn: cfg.auth.expiration});//create the token
         req.headers.authorization = jwtToken;
         res.status(200).json({
             message: "registartion successful",

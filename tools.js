@@ -13,3 +13,13 @@ module.exports.executeQuery = function (sqlQuery) {
     });
 }
 
+//Return true if the param is not safe, false otherwise 
+module.exports.checkSQLInjection = function (param) {
+    // Regular expression to match SQL keywords
+    const sqlKeywords = /select|insert|update|delete|drop|alter|create|union|--|\/\*|\*|\.\.\/|\.\/|UNION|file|cast|convert|char|;|or|and|not/i;
+
+    if (sqlKeywords.test(param)) {
+        return true;
+    }
+    return false;
+}

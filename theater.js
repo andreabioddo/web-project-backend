@@ -200,12 +200,30 @@ router.put('/:theaterId/updateseat/:seatId', (req, res) => {
 
 
 router.get('/seats/:theaterId', (req, res) => {
-    console.log("HERE2");
     tool.executeQuery(
         `SELECT * FROM seats WHERE id_theater=${req.params.theaterId}`
     ).then((res1)=>{
         res.status(200).send(res1.rows);
+    }).catch((err)=>{
+        res.status(400).json({
+            message: "error occurred",
+            error: err
+        });
     })
 })
+
+
+/*router.get('/theater/seats/:theaterId/:showId', (req, res) => {
+    tool.executeQuery(
+        ``
+    ).then((res1)=>{
+
+    }).catch((err)=>{
+        res.status(400).json({
+            message: "error occurred",
+            error: err
+        });
+    })
+})*/
 
 module.exports = router;

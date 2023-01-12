@@ -10,7 +10,7 @@ drop table users;
 
 create table users(
     id serial primary key,
-    name varchar(25) not null,
+    name text not null,
     email varchar(500) not null,
     password text not null,
     isadmin boolean default false not null,
@@ -19,7 +19,7 @@ create table users(
 
 create table theaters (
     id serial primary key,
-    name varchar(25) not null,
+    name text not null,
     number_of_seats int not null check(number_of_seats >= 0)
 );
 
@@ -35,7 +35,7 @@ create table seats (
 
 create table movies(
     id serial primary key,
-    name varchar(25) not null,
+    name text not null,
     description text,
     duration int check(duration >= 0),
     age int check(age >= 0)
@@ -77,7 +77,7 @@ create table tickets(
 
 create table features(
     id serial primary key,
-    name varchar(25) not null
+    name text not null
 );
 
 create table hasfeature(

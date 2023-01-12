@@ -9,6 +9,15 @@ const jwt = require('jsonwebtoken');
 
 // login route creating/returning a token on successful login
 router.post('/', (req, res) => {
+    console.log(tool.checkSQLInjection(req.body.email));
+    console.log(tool.checkSQLInjection(req.body.password));
+    if(tool.checkSQLInjection(req.body.email) || tool.checkSQLInjection(req.body.password)){
+        res.status(401).json({
+            "message":"Data invalid",
+            "error": "Data invalid"
+        });
+        return;
+    }
     let query = `SELECT * FROM users WHERE email='${req.body.email}' AND password='${req.body.password}'`;
     pool.query(query)
     .then (results => {
