@@ -10,7 +10,7 @@ const jwt = require('jsonwebtoken');
 // login route creating/returning a token on successful login
 router.post('/', (req, res) => {
     let query = `SELECT * FROM users WHERE email='${req.body.email}' AND password='${req.body.password}'`;
-    e
+    pool.query(query)
     .then (results => {
         let resultRows = results.rows;
             if(results.rowCount == 0){//if the rowCounter is 0, it means that the compination email, password is wrong
