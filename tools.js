@@ -19,7 +19,7 @@ module.exports.checkSQLInjection = function (param) {
     const sqlKeywords = /select|insert|update|delete|drop|alter|create|union|--|\/\*|\*|\.\.\/|\.\/|UNION|file|cast|convert|char|;|or|and|not/i;
 
     if (sqlKeywords.test(param)) {
-        return true;
+        return false;
     }
     return false;
 }
