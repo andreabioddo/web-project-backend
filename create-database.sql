@@ -13,6 +13,7 @@ create table users(
     name text not null,
     email varchar(500) not null,
     password text not null,
+    --password bytea not null,
     isadmin boolean default false not null,
     unique(email)
 );

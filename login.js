@@ -9,9 +9,27 @@ const jwt = require('jsonwebtoken');
 
 // login route creating/returning a token on successful login
 router.post('/', (req, res) => {
+/*
+    tool.executeQuery("select password from users where id=30")
+    .then((pp) => {
+        tool.comparePasswords("password", pp.rows[0].password.toString()).then((uu)=>{console.log("QUI:   " + uu);})
+    })
+
+    tool.hashPassword(req.body.password)
+    .then((rrr) => {
+        pool.query(`
+        INSERT INTO users (name, email, password, isadmin) VALUES 
+        ('Alexander Martinez', '${req.body.email}', '${rrr}', false) 
+        `)
+
+    })
+
+
     console.log(tool.checkSQLInjection(req.body.email));
-    console.log(tool.checkSQLInjection(req.body.password));
-    if(tool.checkSQLInjection(req.body.email) || tool.checkSQLInjection(req.body.password)){
+    
+    //tool.comparePasswords()
+*/
+    if(!tool.checkSQLInjection(req.body.email)){
         res.status(401).json({
             "message":"Data invalid",
             "error": "Data invalid"
@@ -22,6 +40,11 @@ router.post('/', (req, res) => {
     pool.query(query)
     .then (results => {
         let resultRows = results.rows;
+        /*console.log((resultRows[0].password.toString()));
+        tool.comparePasswords(req.body.password, resultRows[0].password.toString())
+        .then((result) => {
+            console.log("RESULT: " + result);
+        })*/
             if(results.rowCount == 0){//if the rowCounter is 0, it means that the compination email, password is wrong
                 res.status(401).json({
                     "message":"Login failed",
@@ -30,7 +53,7 @@ router.post('/', (req, res) => {
             } else {
                 let resultUser = resultRows[0];
                 console.log(resultUser);
-                const jwtToken = jwt.sign({user:resultUser.name, isAdmin:resultUser.isadmin}, cfg.auth.jwt_key, {expiresIn: cfg.auth.expiration});//create the token
+                const jwtToken = jwt.sign({user:resultUser.name, isAdmin:resultUser.isadmin, id:resultUser.id}, cfg.auth.jwt_key, {expiresIn: cfg.auth.expiration});//create the token
                 req.headers.authorization = jwtToken;
                 res.status(200).json({
                     message: "login successful",

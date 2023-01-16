@@ -25,6 +25,9 @@ app.use("/theater", theaterRoute);
 const loginRoute = require('./login');
 app.use("/login", loginRoute);
 
+const reviewRoute = require('./review');
+app.use("/review", reviewRoute);
+
 // get products for logged in user as a list of JSON entries
 app.get("/testuser", checkAuth.checkUser ,(req, res) => {
     res.status(200).send("Everything is working!");
@@ -37,3 +40,13 @@ app.get("/testadmin", checkAuth.checkAdmin ,(req, res) => {
 let port = 3000;
 app.listen(port);
 console.log("Server running at: http://localhost:"+port);
+/*
+let tool = require('./tools');
+
+tool.hashPassword("password").then((res) => console.log(res));
+
+tool.comparePasswords("password", "$2b$10$dnWI/yOO9vdKZXtsvtScKeE.ZZ33t/QAuuDQN6cPOLpGi7E5uu9L2").then((res) => {
+    console.log(res);
+})
+
+*/
