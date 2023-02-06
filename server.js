@@ -13,22 +13,22 @@ app.use(bodyParser.json()); // support json encoded bodies
 
 const checkAuth = require('./check_auth');
 
-const userRoute = require('./user');
+const userRoute = require('./routes/user');
 app.use("/user", userRoute);
 
-const movieRoute = require('./movie');
+const movieRoute = require('./routes/movie');
 app.use("/movie", movieRoute);
 
-const theaterRoute = require('./theater');
+const theaterRoute = require('./routes/theater');
 app.use("/theater", theaterRoute);
 
-const loginRoute = require('./login');
+const loginRoute = require('./routes/login');
 app.use("/login", loginRoute);
 
-const reviewRoute = require('./review');
+const reviewRoute = require('./routes/review');
 app.use("/review", reviewRoute);
 
-const ticketRoute = require('./ticket');
+const ticketRoute = require('./routes/ticket');
 app.use("/ticket", ticketRoute);
 
 // get products for logged in user as a list of JSON entries

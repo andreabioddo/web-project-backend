@@ -1,9 +1,9 @@
-let cfg = require('./config.json');
-let tool = require('./tools');
+let cfg = require('../config.json');
+let tool = require('../tools');
 const express = require('express');
 const router = express.Router();
 
-const pool = require('./pool.js');
+const pool = require('../pool.js');
 
 const jwt = require('jsonwebtoken');
 

@@ -1,9 +1,9 @@
-let tool = require('./tools');
+let tool = require('../tools');
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-let cfg = require('./config.json');
-const checkAuth = require('./check_auth');
+let cfg = require('../config.json');
+const checkAuth = require('../check_auth');
 
 /** Return an array of users */
 router.get('/', checkAuth.checkAdmin, (req, res) => {

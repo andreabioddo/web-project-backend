@@ -1,4 +1,4 @@
-let tool = require('./tools');
+let tool = require('../tools');
 const express = require('express');
 const router = express.Router();
 

@@ -1,6 +1,6 @@
-let tool = require('./tools');
+let tool = require('../tools');
 const express = require('express');
-const { returnJWTData } = require('./check_auth');
+const { returnJWTData } = require('../check_auth');
 const router = express.Router();
 
 

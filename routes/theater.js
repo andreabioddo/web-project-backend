@@ -1,6 +1,6 @@
-let tool = require('./tools');
+let tool = require('../tools');
 const express = require('express');
-const pool = require('./pool');
+const pool = require('../pool');
 const router = express.Router();
 
 /** Return an array of theaters */

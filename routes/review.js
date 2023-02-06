@@ -1,7 +1,7 @@
-let tool = require('./tools');
+let tool = require('../tools');
 const express = require('express');
 const router = express.Router();
-const checkAuth = require('./check_auth');
+const checkAuth = require('../check_auth');
 
 //Add Middleware with authrequest
 
