@@ -107,7 +107,17 @@ router.get('/detailseats/:showId', (req, res) => {
     })
 })
 
-
+router.get('/:movieId/ratings', (req, res) => {
+    tool.executeQuery(
+        `SELECT * FROM ratings 
+        WHERE id_movie=${req.params.movieId}`
+    ).then((result) => {
+        res.status(200).send(result.rows);
+    }).catch((err) => {
+        console.log(err);
+        res.status(400).send(err);
+    })
+})
 
 
 
