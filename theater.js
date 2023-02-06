@@ -222,18 +222,4 @@ router.get('/seats/:theaterId', (req, res) => {
     })
 })
 
-
-/*router.get('/theater/seats/:theaterId/:showId', (req, res) => {
-    tool.executeQuery(
-        ``
-    ).then((res1)=>{
-
-    }).catch((err)=>{
-        res.status(400).json({
-            message: "error occurred",
-            error: err
-        });
-    })
-})*/
-
 module.exports = router;
