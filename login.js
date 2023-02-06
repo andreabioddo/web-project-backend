@@ -12,10 +12,10 @@ router.post('/', (req, res) => {
 /*
     tool.executeQuery("select password from users where id=30")
     .then((pp) => {
-        tool.comparePasswords("password", pp.rows[0].password.toString()).then((uu)=>{console.log("QUI:   " + uu);})
+        tool.compareTexts("password", pp.rows[0].password.toString()).then((uu)=>{console.log("QUI:   " + uu);})
     })
 
-    tool.hashPassword(req.body.password)
+    tool.hashText(req.body.password)
     .then((rrr) => {
         pool.query(`
         INSERT INTO users (name, email, password, isadmin) VALUES 
@@ -27,7 +27,7 @@ router.post('/', (req, res) => {
 
     console.log(tool.checkSQLInjection(req.body.email));
     
-    //tool.comparePasswords()
+    //tool.compareTexts()
 */
     if(!tool.checkSQLInjection(req.body.email)){
         res.status(401).json({
@@ -41,7 +41,7 @@ router.post('/', (req, res) => {
     .then (results => {
         let resultRows = results.rows;
         /*console.log((resultRows[0].password.toString()));
-        tool.comparePasswords(req.body.password, resultRows[0].password.toString())
+        tool.compareTexts(req.body.password, resultRows[0].password.toString())
         .then((result) => {
             console.log("RESULT: " + result);
         })*/

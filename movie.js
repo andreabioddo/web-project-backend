@@ -117,10 +117,10 @@ router.get('/:movieId/ratings', (req, res) => {
         console.log(err);
         res.status(400).send(err);
     })
-})
+});
 
 
-route.post('/:userId/addrating/:movieId', (req, res) => {
+router.post('/:userId/addrating/:movieId', (req, res) => {
     tool.executeQuery(
         `INSERT INTO ratings (stars, review, id_user, id_movie)
         VALUES(${req.body.stars}, '${req.body.review}', ${req.params.userId}, ${req.params.movieId})
