@@ -120,5 +120,21 @@ router.get('/:movieId/ratings', (req, res) => {
 })
 
 
+route.post('/:userId/addrating/:movieId', (req, res) => {
+    tool.executeQuery(
+        `INSERT INTO ratings (stars, review, id_user, id_movie)
+        VALUES(${req.body.stars}, '${req.body.review}', ${req.params.userId}, ${req.params.movieId})
+        RETURNING id`
+    ).then((result) => {
+        res.status(200).json({
+            message: "new rating created",
+            lastId: result.rows[0].id
+        });
+    }).catch((err) => {
+        console.log(err);
+        res.status(400).send(err);
+    })
+})
+
 
 module.exports = router;
