@@ -7,25 +7,18 @@ const router = express.Router();
 router.get('/', (req, res) => {
     tool.executeQuery(
         `SELECT * FROM theaters`
-    ).then((result) => {
-        let ret = [];
-        /*for(let r of result.rows){
-            pool.query(`SELECT * FROM seats WHERE id_theater=${r.id}`,
-            ((seatsRes) => {
-                if(seatsRes.rowCount == 0){
-                    r['seats'] = [];
-                } else {
-                    r['seats'] = seatsRes.rows;
-                }
-                ret.push(r);
-
-            }),((err)=>{
-                res.status(400).json({
-                    message: "error occurred",
-                    error: err
-                });
-            }))
-        }*/
+    ).then(async (result) => {
+        for(let r of result.rows){
+            let tmp = await pool.query(`SELECT * FROM seats WHERE id_theater=${r.id}`);
+            r.seats = tmp.rows;
+            tmp = await pool.query(`
+                SELECT f.name, f.id FROM features f 
+                JOIN hasfeature hf ON f.id=hf.id_feature
+                JOIN theaters t ON t.id=hf.id_theater
+                WHERE t.id=${r.id}`
+            );
+            r.features = tmp.rows;
+        }
         res.status(200).send(result.rows);
     }).catch((err) => {
         res.status(400).json({
@@ -43,11 +36,28 @@ router.get('/:id', (req, res) => {
         tool.executeQuery(
             `SELECT * FROM seats WHERE id_theater=${req.params.id}`
         ).then((res2)=>{
-            let finalResult = res1.rows[0];
-            finalResult.seats = res2.rows;
-            res.status(200).send(finalResult);
+            tool.executeQuery(
+                `SELECT f.name, f.id FROM features f 
+                JOIN hasfeature hf ON f.id=hf.id_feature
+                JOIN theaters t ON t.id=hf.id_theater
+                WHERE t.id=${req.params.id}`
+            ).then((res3) => {
+                let intermediateResult = res1.rows[0];
+                intermediateResult.seats = res2.rows;
+                intermediateResult.hasFeature = res3.rows;
+                res.status(200).send(intermediateResult);
+            }).catch((err) => {
+                res.status(400).json({
+                    message: "error occurred",
+                    error: err
+                });
+            })
+        }).catch((err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
         })
-
     }).catch((err) => {
         res.status(400).json({
             message: "error occurred",
