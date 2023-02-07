@@ -1,10 +1,10 @@
 let tool = require('../tools');
 const express = require('express');
-const { returnJWTData } = require('../check_auth');
+const { returnJWTData, checkUser, checkAdmin } = require('../check_auth');
 const router = express.Router();
 
 
-router.get('/qrcode/:ticketId', (req, res) => {
+router.get('/qrcode/:ticketId', checkUser, (req, res) => {
     tool.executeQuery(`
         SELECT * FROM tickets
         WHERE id=${req.params.ticketId}
@@ -27,7 +27,7 @@ router.get('/qrcode/:ticketId', (req, res) => {
 });
 
 
-router.post('/checkqr/:idShow', (req, res) => {
+router.post('/checkqr/:idShow', checkAdmin, (req, res) => {
     let decodedData = tool.decodeTicketQR(req.body.qrcode);
     console.log(decodedData);
     tool.executeQuery(
@@ -65,7 +65,7 @@ router.post('/checkqr/:idShow', (req, res) => {
     })
 })
 
-router.get('/ofuser', (req, res) => {
+router.get('/ofuser', checkUser, (req, res) => {
     let userData = returnJWTData(req.headers.authorization);
     tool.executeQuery(
         `SELECT t.id, t.price, u.name, s.date, s.time 
@@ -84,7 +84,7 @@ router.get('/ofuser', (req, res) => {
 });
 
 /** Return a json with the detail of the user with id=id given as param*/
-router.get('/:id', (req, res) => {
+router.get('/:id', checkUser, (req, res) => {
     tool.executeQuery(
         `SELECT t.id, t.price, u.name, s.date, s.time 
         FROM tickets t
@@ -103,9 +103,9 @@ router.get('/:id', (req, res) => {
 
 
 /** Return an array of tickets */
-router.get('/', (req, res) => {
+router.get('/', checkAdmin, (req, res) => {
     tool.executeQuery(
-        `SELECT SELECT t.id, t.price, u.name, s.date, s.time FROM tickets as t
+        `SELECT t.id, t.price, u.name, s.date, s.time FROM tickets as t
          JOIN users as u on u.id = t.id_user
          JOIN shows as sh on sh.id = t.id_show
          JOIN seats as st on st.id = t.id_seat`
@@ -120,7 +120,7 @@ router.get('/', (req, res) => {
 });
 
 /**Add an user taken the details from the body of the request. It return a message and the last id*/
-router.post('/add', (req, res) => {
+router.post('/add', checkAdmin, (req, res) => {
     tool.executeQuery(
         `INSERT INTO tickets (price, id_seat, id_user, id_show)
         VALUES('${req.body.price}', '${req.body.id_seat}', '${req.body.id_user}', ${req.body.id_show}) 

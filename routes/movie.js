@@ -1,9 +1,10 @@
 let tool = require('../tools');
 const express = require('express');
+const { checkUser, checkAdmin } = require('../check_auth');
 const router = express.Router();
 
 /** Return an array of users */
-router.get('/', (req, res) => {
+router.get('/', checkUser, (req, res) => {
     tool.executeQuery(
         `SELECT * FROM movies`
     ).then((result) => {
@@ -17,7 +18,7 @@ router.get('/', (req, res) => {
 });
 
 /** Return a json with the detail of the user with id=id given as param*/
-router.get('/:id', (req, res) => {
+router.get('/:id', checkUser, (req, res) => {
     tool.executeQuery(
         `SELECT * FROM movies WHERE id=${req.params.id}`
     ).then((result) => {
@@ -31,7 +32,7 @@ router.get('/:id', (req, res) => {
 });
 
 /**Add an user taken the details from the body of the request. It return a message and the last id*/
-router.post('/add', (req, res) => {
+router.post('/add', checkAdmin, (req, res) => {
     tool.executeQuery(
         `INSERT INTO movies (name, description, duration, age)
         VALUES('${req.body.name}', '${req.body.description}', '${req.body.duration}', ${req.body.age}) 
@@ -47,7 +48,7 @@ router.post('/add', (req, res) => {
     })
 });
 
-router.get('/show/:movieId', (req, res) => {
+router.get('/show/:movieId', checkUser, (req, res) => {
     tool.executeQuery(
         `SELECT s.id as showId, t.name as theaterName, t.id as theaterId, t.number_of_seats, s.date as date, s.time as time 
         FROM shows as s
@@ -62,7 +63,7 @@ router.get('/show/:movieId', (req, res) => {
     })
 });
 
-router.get('/detailseats/:showId', (req, res) => {
+router.get('/detailseats/:showId', checkUser, (req, res) => {
     tool.executeQuery(
         `SELECT s.id as showId, t.name as theaterName, t.id as theaterId, t.number_of_seats, s.date as date, s.time as time 
         FROM shows as s
@@ -100,35 +101,5 @@ router.get('/detailseats/:showId', (req, res) => {
         res.status(400).send(err);
     })
 })
-
-router.get('/:movieId/ratings', (req, res) => {
-    tool.executeQuery(
-        `SELECT * FROM ratings 
-        WHERE id_movie=${req.params.movieId}`
-    ).then((result) => {
-        res.status(200).send(result.rows);
-    }).catch((err) => {
-        console.log(err);
-        res.status(400).send(err);
-    })
-});
-
-
-router.post('/:userId/addrating/:movieId', (req, res) => {
-    tool.executeQuery(
-        `INSERT INTO ratings (stars, review, id_user, id_movie)
-        VALUES(${req.body.stars}, '${req.body.review}', ${req.params.userId}, ${req.params.movieId})
-        RETURNING id`
-    ).then((result) => {
-        res.status(200).json({
-            message: "new rating created",
-            lastId: result.rows[0].id
-        });
-    }).catch((err) => {
-        console.log(err);
-        res.status(400).send(err);
-    })
-})
-
 
 module.exports = router;

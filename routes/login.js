@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const { checkInjection } = require('../middleware');
 
 // login route creating/returning a token on successful login
-router.post('/', checkInjection, (req, res) => {
+router.post('/', (req, res) => {
     tool.executeQuery(`SELECT * FROM users WHERE email='${req.body.email}'`)
     .then (results => {
         let resultRows = results.rows;

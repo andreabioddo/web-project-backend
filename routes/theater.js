@@ -1,11 +1,12 @@
 let tool = require('../tools');
 const express = require('express');
 const pool = require('../pool');
+const { checkUser, checkAdmin } = require('../check_auth');
 const router = express.Router();
 
 
 /** Return an array of theaters */
-router.get('/', (req, res) => {
+router.get('/', checkUser, (req, res) => {
     tool.executeQuery(
         `SELECT * FROM theaters`
     ).then(async (result) => {
@@ -30,7 +31,7 @@ router.get('/', (req, res) => {
 });
 
 
-router.get('/allfeatures', (req, res) => {
+router.get('/allfeatures', checkAdmin, (req, res) => {
     tool.executeQuery(
         'SELECT * FROM features'
     ).then((result) => {
@@ -47,7 +48,7 @@ router.get('/allfeatures', (req, res) => {
 
 
 /** Return a json with the detail of the theater with id=id given as param*/
-router.get('/:id', (req, res) => {
+router.get('/:id', checkUser, (req, res) => {
     tool.executeQuery(
         `SELECT * FROM theaters WHERE id=${req.params.id}`
     ).then((res1) => {
@@ -85,7 +86,7 @@ router.get('/:id', (req, res) => {
 });
 
 /**Add an theater taken the details from the body of the request. It return a message and the last id*/
-router.post('/add', (req, res) => {
+router.post('/add', checkAdmin, (req, res) => {
     tool.executeQuery(
         `INSERT INTO theaters (name, number_of_seats)
         VALUES('${req.body.name}', '${req.body.number_of_seats}') 
@@ -119,7 +120,7 @@ router.post('/add', (req, res) => {
     })
 });
 
-router.delete('/:id', (req, res)=>{
+router.delete('/:id', checkAdmin, (req, res)=>{
     tool.executeQuery(
         `SELECT * FROM theaters WHERE id=${req.params.id}`
     ).then((result) => {
@@ -149,7 +150,7 @@ router.delete('/:id', (req, res)=>{
     })
 });
 
-router.put(':/id', (req, res) => {
+router.put(':/id', checkAdmin, (req, res) => {
     tool.executeQuery(
         `UPDATE theaters
         SET name='${req.body.name}', number_of_seats='${req.body.number_of_seats}'
@@ -166,7 +167,7 @@ router.put(':/id', (req, res) => {
     })
 })
 
-router.post('/:theaterId/addseat', (req, res) => {
+router.post('/:theaterId/addseat', checkAdmin, (req, res) => {
     tool.executeQuery(
         `INSERT INTO seats (number, row, type, removable, id_theater)
         VALUES(${req.body.number}, ${req.body.row}, '${req.body.type}', ${req.body.removale}, ${req.params.theaterId})`
@@ -182,7 +183,7 @@ router.post('/:theaterId/addseat', (req, res) => {
     })
 });
 
-router.delete('/:theaterId/removeseat/:seatId', (req, res)=>{
+router.delete('/:theaterId/removeseat/:seatId', checkAdmin, (req, res)=>{
     tool.executeQuery(
         `SELECT * FROM seats WHERE id=${req.params.seatId} AND id_theater=${req.params.theaterId}`
     ).then((result) => {
@@ -212,7 +213,7 @@ router.delete('/:theaterId/removeseat/:seatId', (req, res)=>{
     })
 });
 
-router.put('/:theaterId/updateseat/:seatId', (req, res) => {
+router.put('/:theaterId/updateseat/:seatId', checkAdmin, (req, res) => {
     tool.executeQuery(
         `SELECT * FROM seats WHERE id=${req.params.seatId} AND id_theater=${req.params.theaterId}`
     ).then((result) => {
@@ -243,7 +244,7 @@ router.put('/:theaterId/updateseat/:seatId', (req, res) => {
 })
 
 
-router.get('/seats/:theaterId', (req, res) => {
+router.get('/seats/:theaterId', checkUser, (req, res) => {
     tool.executeQuery(
         `SELECT * FROM seats WHERE id_theater=${req.params.theaterId}`
     ).then((res1)=>{

@@ -3,9 +3,7 @@ const express = require('express');
 const router = express.Router();
 const checkAuth = require('../check_auth');
 
-//Add Middleware with authrequest
-
-router.get('/:movieId', (req, res) => {    
+router.get('/:movieId', checkAuth.checkUser, (req, res) => {    
     tool.executeQuery(`
         SELECT u.id as userid, u.name, r.stars, r.review FROM ratings as r 
         JOIN users as u ON u.id=r.id_user
@@ -24,7 +22,7 @@ router.get('/:movieId', (req, res) => {
 });
 
 
-router.post('/:movieId/add', (req, res) => {
+router.post('/:movieId/add', checkAuth.checkUser, (req, res) => {
     let userData = checkAuth.returnJWTData(req.headers.authorization);
     tool.executeQuery(`
         INSERT INTO ratings(stars, review, id_user, id_movie)

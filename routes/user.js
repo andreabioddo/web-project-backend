@@ -35,7 +35,7 @@ router.get('/:id', checkAuth.checkAdmin, (req, res) => {
 });
 
 /**Add an user taken the details from the body of the request. It return a message and the last id*/
-router.post('/register', checkInjection, hashPassword, (req, res) => {
+router.post('/register', hashPassword, (req, res) => {
     tool.executeQuery(
         `INSERT INTO users (name, password, email, isadmin)
         VALUES('${req.body.name}', '${req.body.password}', '${req.body.email}', 'false')`
