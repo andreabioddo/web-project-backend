@@ -11,6 +11,7 @@ router.get('/allfeatures', /*checkAdmin,*/ (req, res) => {
         res.status(200).send(result.rows);
         return;
     }).catch((err) => {
+        console.log("14");
         console.log(err);
         res.status(400).json({
             message: "error occurred",
@@ -39,6 +40,8 @@ router.get('/', /*checkUser,*/ (req, res) => {
         res.status(200).send(result.rows);
         return;
     }).catch((err) => {
+        console.log("43");
+        console.log(err);
         res.status(400).json({
             message: "error occurred",
             error: err
@@ -75,6 +78,8 @@ router.get('/:id', /*checkUser,*/ (req, res) => {
                 return;
             })
         }).catch((err) => {
+            console.log("81");
+            console.log(err);
             res.status(400).json({
                 message: "error occurred",
                 error: err
@@ -82,6 +87,8 @@ router.get('/:id', /*checkUser,*/ (req, res) => {
             return;
         })
     }).catch((err) => {
+        console.log("90");
+        console.log(err);
         res.status(400).json({
             message: "error occurred",
             error: err
@@ -103,6 +110,7 @@ router.post('/add', /*checkAdmin,*/ (req, res) => {
             console.log(`INSERT INTO hasfeature(id_feature, id_theater) VALUES (${feature}, ${lastId})`);
             tool.executeQuery(`INSERT INTO hasfeature(id_feature, id_theater) VALUES (${feature}, ${lastId})`).catch(
                 (err) => {
+                    console.log("113");
                     console.log(err);
                     res.status(400).json({
                         message: "error occurred",
@@ -118,6 +126,7 @@ router.post('/add', /*checkAdmin,*/ (req, res) => {
         });
         return;
     }).catch((err) => {
+        console.log("129");
         console.log(err);
         res.status(400).json({
             message: "error occurred",
@@ -145,6 +154,8 @@ router.delete('/:id', /*checkAdmin,*/ (req, res)=>{
             });
             return;
         }).catch((err)=>{
+            console.log("157");
+            console.log(err);
             res.status(400).json({
                 message: "error occurred",
                 error: err
@@ -152,6 +163,8 @@ router.delete('/:id', /*checkAdmin,*/ (req, res)=>{
             return;
         })
     }).catch((err)=>{
+        console.log(err);
+        console.log("167");
         res.status(400).json({
             messsage:"An error occurred",
             error:err
@@ -171,13 +184,15 @@ router.put(':/id', /*checkAdmin,*/ (req, res) => {
         });
         return;
     }).catch((err)=>{
+        console.log("187");
+        console.log(err);
         res.status(400).json({
             messsage:"An error occurred",
             error:err
         });
         return;
     })
-})
+});
 
 router.post('/:theaterId/addseat', /*checkAdmin,*/ (req, res) => {
     tool.executeQuery(
@@ -189,6 +204,8 @@ router.post('/:theaterId/addseat', /*checkAdmin,*/ (req, res) => {
         });
         return;
     }).catch((err)=>{
+        console.log("207");
+        console.log(err);
         res.status(400).json({
             messsage:"An error occurred",
             error:err
@@ -215,6 +232,8 @@ router.delete('/:theaterId/removeseat/:seatId', /*checkAdmin,*/ (req, res)=>{
             });
             return;
         }).catch((err)=>{
+            console.log("235");
+            console.log(err);
             res.status(400).json({
                 message: "error occurred",
                 error: err
@@ -222,6 +241,8 @@ router.delete('/:theaterId/removeseat/:seatId', /*checkAdmin,*/ (req, res)=>{
             return;
         })
     }).catch((err)=>{
+        console.log("244");
+        console.log(err);
         res.status(400).json({
             message: "error occurred",
             error: err
@@ -248,6 +269,8 @@ router.put('/:theaterId/updateseat/:seatId', /*checkAdmin,*/ (req, res) => {
             });
             return;
         }).catch((err)=>{
+            console.log("272");
+            console.log(err);
             res.status(400).json({
                 message: "error occurred",
                 error: err
@@ -255,13 +278,15 @@ router.put('/:theaterId/updateseat/:seatId', /*checkAdmin,*/ (req, res) => {
             return;
         })
     }).catch((err)=>{
+        console.log("281");
+        console.log(err);
         res.status(400).json({
             message: "error occurred",
             error: err
         });
         return;
     })
-})
+});
 
 
 router.get('/seats/:theaterId', /*checkUser,*/ (req, res) => {
@@ -271,6 +296,8 @@ router.get('/seats/:theaterId', /*checkUser,*/ (req, res) => {
         res.status(200).send(res1.rows);
         return;
     }).catch((err)=>{
+        console.log("299");
+        console.log(err);
         res.status(400).json({
             message: "error occurred",
             error: err
