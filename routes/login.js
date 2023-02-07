@@ -12,48 +12,46 @@ router.post('/', checkInjection, (req, res) => {
     pool.query(query)
     .then (results => {
         let resultRows = results.rows;
-            if(results.rowCount == 0){//if the rowCounter is 0, it means that the compination email, password is wrong
-                res.status(401).json({
-                    "message":"Login failed",
-                    "error": "Invalid credentials"
-                });
-            } else {
-                console.log(req.body.password + "  -  " + resultRows[0].password);
-                tool.compareTexts(req.body.password, resultRows[0].password).then(
-                (result) => {
-                    if(!result){
-                        let resultUser = resultRows[0];
-                        console.log(resultUser);
-                        const jwtToken = jwt.sign({user:resultUser.name, isAdmin:resultUser.isadmin, id:resultUser.id}, cfg.auth.jwt_key, {expiresIn: cfg.auth.expiration});//create the token
-                        req.headers.authorization = jwtToken;
-                        res.status(200).json({
-                            message: "login successful",
-                            login: jwtToken,
-                            isAdmin:resultUser.isadmin
-                        });
-                    } else {
-                        res.status(400).json({
-                            "message":"Login failed",
-                            "error": "invalid credentials"
-                        });
-                    }
-                }).catch((error) => {
-                    console.log(error);
+        if(results.rowCount == 0){//if the rowCounter is 0, it means that the compination email, password is wrong
+            res.status(401).json({
+                "message":"Login failed",
+                "error": "Invalid credentials"
+            });
+        } else {
+            tool.compareTexts(req.body.password, resultRows[0].password).then(
+            (result) => {
+                if(!result){
+                    let resultUser = resultRows[0];
+                    console.log(resultUser);
+                    const jwtToken = jwt.sign({user:resultUser.name, isAdmin:resultUser.isadmin, id:resultUser.id}, cfg.auth.jwt_key, {expiresIn: cfg.auth.expiration});//create the token
+                    req.headers.authorization = jwtToken;
+                    res.status(200).json({
+                        message: "login successful",
+                        login: jwtToken,
+                        isAdmin:resultUser.isadmin
+                    });
+                } else {
                     res.status(400).json({
                         "message":"Login failed",
-                        "error": error
+                        "error": "invalid credentials"
                     });
-                })
-            }
-        })
-        .catch(error => {
-            console.log(error);
-            res.status(400).json({
-                "message":"Login failed",
-                "error": error
-            });
+                }
+            }).catch((error) => {
+                console.log(error);
+                res.status(400).json({
+                    "message":"Login failed",
+                    "error": error
+                });
+            })
+        }
+    })
+    .catch(error => {
+        console.log(error);
+        res.status(400).json({
+            "message":"Login failed",
+            "error": error
         });
-
+    });
 });
 
 module.exports = router;
