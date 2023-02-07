@@ -10,6 +10,10 @@ app.use(bodyParser.json()); // support json encoded bodies
 
 const checkAuth = require('./check_auth');
 
+//wall to prevent XSS attacks and SQL Injections
+const { checkInjection, checkXSS } = require('./middleware');
+app.use(checkInjection, checkXSS);
+
 const userRoute = require('./routes/user');
 app.use("/user", userRoute);
 
