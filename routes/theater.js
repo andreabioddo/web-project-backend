@@ -91,11 +91,27 @@ router.post('/add', (req, res) => {
         VALUES('${req.body.name}', '${req.body.number_of_seats}') 
         RETURNING id`
     ).then((result) => {
+        console.log(req.body.features);
+        let lastId = result.rows[0].id;
+        for(let feature of req.body.features){
+            console.log(`INSERT INTO hasfeature(id_feature, id_theater) VALUES (${feature}, ${lastId})`);
+            tool.executeQuery(`INSERT INTO hasfeature(id_feature, id_theater) VALUES (${feature}, ${lastId})`).catch(
+                (err) => {
+                    console.log(err);
+                    res.status(400).json({
+                        message: "error occurred",
+                        error: err
+                    });
+                    return;
+                }
+            )
+        }        
         res.status(200).json({
             message: "new theater created",
-            lastId: result.rows[0].id
+            lastId: lastId
         });
     }).catch((err) => {
+        console.log(err);
         res.status(400).json({
             message: "error occurred",
             error: err

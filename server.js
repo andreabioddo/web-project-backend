@@ -5,14 +5,14 @@ const tool = require('./tools');
 app.use(express.static('public')); // host public folder
 app.use(cors()); // allow all origins -> Access-Control-Allow-Origin: *
 
-let bodyParser = require('body-parser');
-app.use(bodyParser.json()); // support json encoded bodies
-
 const checkAuth = require('./check_auth');
 
 //wall to prevent XSS attacks and SQL Injections
 const { checkInjection, checkXSS } = require('./middleware');
 app.use(checkInjection, checkXSS);
+
+let bodyParser = require('body-parser');
+app.use(bodyParser.json()); // support json encoded bodies
 
 const userRoute = require('./routes/user');
 app.use("/user", userRoute);
