@@ -3,6 +3,7 @@ const express = require('express');
 const pool = require('../pool');
 const router = express.Router();
 
+
 /** Return an array of theaters */
 router.get('/', (req, res) => {
     tool.executeQuery(
@@ -27,6 +28,23 @@ router.get('/', (req, res) => {
         });
     })
 });
+
+
+router.get('/allfeatures', (req, res) => {
+    tool.executeQuery(
+        'SELECT * FROM features'
+    ).then((result) => {
+        res.status(200).send(result.rows);
+    }).catch((err) => {
+        console.log(err);
+        res.status(400).json({
+            message: "error occurred",
+            error: err
+        });
+    })
+});
+
+
 
 /** Return a json with the detail of the theater with id=id given as param*/
 router.get('/:id', (req, res) => {
@@ -220,6 +238,6 @@ router.get('/seats/:theaterId', (req, res) => {
             error: err
         });
     })
-})
+});
 
 module.exports = router;
