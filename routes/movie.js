@@ -49,7 +49,8 @@ router.post('/add', (req, res) => {
 
 router.get('/show/:movieId', (req, res) => {
     tool.executeQuery(
-        `SELECT s.id as showId, t.name as theaterName, t.id as theaterId, t.number_of_seats, s.date as date, s.time as time FROM shows as s
+        `SELECT s.id as showId, t.name as theaterName, t.id as theaterId, t.number_of_seats, s.date as date, s.time as time 
+        FROM shows as s
         INNER JOIN theaters as t ON s.id_theater=t.id
         INNER JOIN movies as m ON m.id=s.id_movie
         WHERE m.id=${req.params.movieId}`
@@ -63,17 +64,22 @@ router.get('/show/:movieId', (req, res) => {
 
 router.get('/detailseats/:showId', (req, res) => {
     tool.executeQuery(
-        `SELECT s.id as showId, t.name as theaterName, t.id as theaterId, t.number_of_seats, s.date as date, s.time as time FROM shows as s
+        `SELECT s.id as showId, t.name as theaterName, t.id as theaterId, t.number_of_seats, s.date as date, s.time as time 
+        FROM shows as s
         INNER JOIN theaters as t ON s.id_theater=t.id
         INNER JOIN movies as m ON m.id=s.id_movie
         WHERE s.id=${req.params.showId}`
     ).then((res1)=>{
         tool.executeQuery(
-            `SELECT s.* FROM shows AS sh INNER JOIN seats AS s on s.id_theater=sh.id_theater
+            `SELECT s.* 
+            FROM shows AS sh 
+            INNER JOIN seats AS s on s.id_theater=sh.id_theater
             WHERE sh.id=${req.params.showId} AND (s.id) NOT IN (select id_seat from tickets as t where t.id_show=sh.id)`
         ).then((res2)=>{
             tool.executeQuery(
-                `SELECT s.* FROM shows AS sh INNER JOIN seats AS s on s.id_theater=sh.id_theater
+                `SELECT s.* 
+                FROM shows AS sh 
+                INNER JOIN seats AS s on s.id_theater=sh.id_theater
                 WHERE sh.id=${req.params.showId} AND (s.id) IN (select id_seat from tickets as t where t.id_show=sh.id)`
             ).then((res3) => {
                 let finalResult = res1.rows[0];

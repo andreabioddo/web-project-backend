@@ -8,8 +8,7 @@ const { checkInjection } = require('../middleware');
 
 // login route creating/returning a token on successful login
 router.post('/', checkInjection, (req, res) => {
-    let query = `SELECT * FROM users WHERE email='${req.body.email}'`;
-    pool.query(query)
+    tool.executeQuery(`SELECT * FROM users WHERE email='${req.body.email}'`)
     .then (results => {
         let resultRows = results.rows;
         if(results.rowCount == 0){//if the rowCounter is 0, it means that the compination email, password is wrong
@@ -20,7 +19,7 @@ router.post('/', checkInjection, (req, res) => {
         } else {
             tool.compareTexts(req.body.password, resultRows[0].password).then(
             (result) => {
-                if(!result){
+                if(result){
                     let resultUser = resultRows[0];
                     console.log(resultUser);
                     const jwtToken = jwt.sign({user:resultUser.name, isAdmin:resultUser.isadmin, id:resultUser.id}, cfg.auth.jwt_key, {expiresIn: cfg.auth.expiration});//create the token

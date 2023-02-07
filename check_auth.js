@@ -9,7 +9,6 @@ function checkAuth (req, res) {
         if(verified){
             req.userData = token;
             return verified;
-            //next();//proced
         } else {
             return res.status(401).json({message: "Authentication failed"});  
         }
