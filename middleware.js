@@ -19,6 +19,11 @@ module.exports.checkInjection = function (req, res, next) {
 }
 
 module.exports.hashPassword = function(req, res, next){
-    req.password = hashText(req.password);
-    next();
+    if(!req.body.password){
+        res.status(400).json({"error":"passowrd filed is missing"});
+    }
+    hashText(req.body.password).then((result) => {
+        req.body.password = result;
+        next();
+    }).catch((err) => {res.status(400).json({"error":err})})
 }
