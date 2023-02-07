@@ -195,9 +195,12 @@ router.put(':/id', /*checkAdmin,*/ (req, res) => {
 });
 
 router.post('/:theaterId/addseat', /*checkAdmin,*/ (req, res) => {
+    console.log(
+        `INSERT INTO seats (number, row, type, removable, id_theater)
+        VALUES(${req.body.number}, ${req.body.row}, '${req.body.type}', ${req.body.removale}, ${req.params.theaterId})`)
     tool.executeQuery(
         `INSERT INTO seats (number, row, type, removable, id_theater)
-        VALUES(${req.body.number}, ${req.body.row}, '${req.body.type}', ${req.body.removale}, ${req.params.theaterId})`
+        VALUES(${req.body.number}, ${req.body.row}, '${req.body.type}', ${req.body.removable}, ${req.params.theaterId})`
     ).then((result)=>{
         res.status(200).json({
             message:"Seats added"
