@@ -53,20 +53,8 @@ router.get('/show/:movieId', (req, res) => {
         INNER JOIN theaters as t ON s.id_theater=t.id
         INNER JOIN movies as m ON m.id=s.id_movie
         WHERE m.id=${req.params.movieId}`
-    ).then((res1)=>{       
-        /*tool.executeQuery(
-            `SELECT count(id) as count FROM seats WHERE id_theater=${res1.rows[0].theaterId}`
-        ).catch((res2)=>{
-
-            console.log(res2);
-
-            let finalResult = res1.rows[0];
-            finalResult.seats_occuped = res2;*/
-            res.status(200).send(/*finalResult*/res1.rows);
-
-        /*})*/
-        
-        
+    ).then((res1)=>{
+        res.status(200).send(res1.rows);
     }).catch((err) => {
         console.log(err);
         res.status(400).send(err);
