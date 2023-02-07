@@ -1,10 +1,10 @@
 let tool = require('../tools');
 const express = require('express');
-const { checkUser, checkAdmin } = require('../check_auth');
+const { /*checkUser,*/ checkAdmin } = require('../check_auth');
 const router = express.Router();
 
 /** Return an array of users */
-router.get('/', checkUser, (req, res) => {
+router.get('/', /*checkUser,*/ (req, res) => {
     tool.executeQuery(
         `SELECT * FROM movies`
     ).then((result) => {
@@ -18,7 +18,7 @@ router.get('/', checkUser, (req, res) => {
 });
 
 /** Return a json with the detail of the user with id=id given as param*/
-router.get('/:id', checkUser, (req, res) => {
+router.get('/:id', /*checkUser,*/ (req, res) => {
     tool.executeQuery(
         `SELECT * FROM movies WHERE id=${req.params.id}`
     ).then((result) => {
@@ -32,7 +32,7 @@ router.get('/:id', checkUser, (req, res) => {
 });
 
 /**Add an user taken the details from the body of the request. It return a message and the last id*/
-router.post('/add', checkAdmin, (req, res) => {
+router.post('/add', /*checkAdmin,*/ (req, res) => {
     tool.executeQuery(
         `INSERT INTO movies (name, description, duration, age)
         VALUES('${req.body.name}', '${req.body.description}', '${req.body.duration}', ${req.body.age}) 
@@ -48,7 +48,7 @@ router.post('/add', checkAdmin, (req, res) => {
     })
 });
 
-router.get('/show/:movieId', checkUser, (req, res) => {
+router.get('/show/:movieId', /*checkUser,*/ (req, res) => {
     tool.executeQuery(
         `SELECT s.id as showId, t.name as theaterName, t.id as theaterId, t.number_of_seats, s.date as date, s.time as time 
         FROM shows as s
@@ -63,7 +63,7 @@ router.get('/show/:movieId', checkUser, (req, res) => {
     })
 });
 
-router.get('/detailseats/:showId', checkUser, (req, res) => {
+router.get('/detailseats/:showId', /*checkUser,*/ (req, res) => {
     tool.executeQuery(
         `SELECT s.id as showId, t.name as theaterName, t.id as theaterId, t.number_of_seats, s.date as date, s.time as time 
         FROM shows as s
