@@ -9,12 +9,14 @@ router.get('/allfeatures', /*checkAdmin,*/ (req, res) => {
         'SELECT * FROM features'
     ).then((result) => {
         res.status(200).send(result.rows);
+        return;
     }).catch((err) => {
         console.log(err);
         res.status(400).json({
             message: "error occurred",
             error: err
         });
+        return;
     })
 });
 
@@ -35,11 +37,13 @@ router.get('/', /*checkUser,*/ (req, res) => {
             r.features = tmp.rows;
         }
         res.status(200).send(result.rows);
+        return;
     }).catch((err) => {
         res.status(400).json({
             message: "error occurred",
             error: err
         });
+        return;
     })
 });
 
@@ -62,23 +66,27 @@ router.get('/:id', /*checkUser,*/ (req, res) => {
                 intermediateResult.seats = res2.rows;
                 intermediateResult.hasFeature = res3.rows;
                 res.status(200).send(intermediateResult);
+                return;
             }).catch((err) => {
                 res.status(400).json({
                     message: "error occurred",
                     error: err
                 });
+                return;
             })
         }).catch((err) => {
             res.status(400).json({
                 message: "error occurred",
                 error: err
             });
+            return;
         })
     }).catch((err) => {
         res.status(400).json({
             message: "error occurred",
             error: err
         });
+        return;
     })
 });
 
@@ -108,12 +116,14 @@ router.post('/add', /*checkAdmin,*/ (req, res) => {
             message: "new theater created",
             lastId: lastId
         });
+        return;
     }).catch((err) => {
         console.log(err);
         res.status(400).json({
             message: "error occurred",
             error: err
         });
+        return;
     })
 });
 
@@ -133,17 +143,20 @@ router.delete('/:id', /*checkAdmin,*/ (req, res)=>{
             res.status(200).json({
                 message:`Theater with id=${req.params.id} DELETED`
             });
+            return;
         }).catch((err)=>{
             res.status(400).json({
                 message: "error occurred",
                 error: err
             });
+            return;
         })
     }).catch((err)=>{
         res.status(400).json({
             messsage:"An error occurred",
             error:err
         });
+        return;
     })
 });
 
@@ -156,11 +169,13 @@ router.put(':/id', /*checkAdmin,*/ (req, res) => {
         res.status(200).json({
             messsage:`Theater with id=${req.params.id} UPDATED`
         });
+        return;
     }).catch((err)=>{
         res.status(400).json({
             messsage:"An error occurred",
             error:err
         });
+        return;
     })
 })
 
@@ -172,11 +187,13 @@ router.post('/:theaterId/addseat', /*checkAdmin,*/ (req, res) => {
         res.status(200).json({
             message:"Seats added"
         });
+        return;
     }).catch((err)=>{
         res.status(400).json({
             messsage:"An error occurred",
             error:err
         });
+        return;
     })
 });
 
@@ -196,17 +213,20 @@ router.delete('/:theaterId/removeseat/:seatId', /*checkAdmin,*/ (req, res)=>{
             res.status(200).json({
                 message:`seat with id=${req.params.seatId} and id_theater=${req.params.theaterId} DELETED`
             });
+            return;
         }).catch((err)=>{
             res.status(400).json({
                 message: "error occurred",
                 error: err
             });
+            return;
         })
     }).catch((err)=>{
         res.status(400).json({
             message: "error occurred",
             error: err
         });
+        return;
     })
 });
 
@@ -226,17 +246,20 @@ router.put('/:theaterId/updateseat/:seatId', /*checkAdmin,*/ (req, res) => {
             res.status(200).json({
                 message:`seats with id=${req.params.seatId} and id_theater=${req.params.theaterId} UPDATED`
             });
+            return;
         }).catch((err)=>{
             res.status(400).json({
                 message: "error occurred",
                 error: err
             });
+            return;
         })
     }).catch((err)=>{
         res.status(400).json({
             message: "error occurred",
             error: err
         });
+        return;
     })
 })
 
@@ -246,11 +269,13 @@ router.get('/seats/:theaterId', /*checkUser,*/ (req, res) => {
         `SELECT * FROM seats WHERE id_theater=${req.params.theaterId}`
     ).then((res1)=>{
         res.status(200).send(res1.rows);
+        return;
     }).catch((err)=>{
         res.status(400).json({
             message: "error occurred",
             error: err
         });
+        return;
     })
 });
 
