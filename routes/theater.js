@@ -4,6 +4,19 @@ const pool = require('../pool');
 const { /*checkUser,*/ checkAdmin } = require('../check_auth');
 const router = express.Router();
 
+router.get('/allfeatures', /*checkAdmin,*/ (req, res) => {
+    tool.executeQuery(
+        'SELECT * FROM features'
+    ).then((result) => {
+        res.status(200).send(result.rows);
+    }).catch((err) => {
+        console.log(err);
+        res.status(400).json({
+            message: "error occurred",
+            error: err
+        });
+    })
+});
 
 /** Return an array of theaters */
 router.get('/', /*checkUser,*/ (req, res) => {
@@ -29,22 +42,6 @@ router.get('/', /*checkUser,*/ (req, res) => {
         });
     })
 });
-
-
-router.get('/allfeatures', /*checkAdmin,*/ (req, res) => {
-    tool.executeQuery(
-        'SELECT * FROM features'
-    ).then((result) => {
-        res.status(200).send(result.rows);
-    }).catch((err) => {
-        console.log(err);
-        res.status(400).json({
-            message: "error occurred",
-            error: err
-        });
-    })
-});
-
 
 
 /** Return a json with the detail of the theater with id=id given as param*/
