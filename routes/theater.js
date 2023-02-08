@@ -107,7 +107,6 @@ router.post('/add', /*checkAdmin,*/ (req, res) => {
         console.log(req.body.features);
         let lastId = result.rows[0].id;
         for(let feature of req.body.features){
-            console.log(`INSERT INTO hasfeature(id_feature, id_theater) VALUES (${feature}, ${lastId})`);
             tool.executeQuery(`INSERT INTO hasfeature(id_feature, id_theater) VALUES (${feature}, ${lastId})`).catch(
                 (err) => {
                     console.log("113");
@@ -173,12 +172,30 @@ router.delete('/:id', /*checkAdmin,*/ (req, res)=>{
     })
 });
 
-router.put(':/id', /*checkAdmin,*/ (req, res) => {
+router.put('/:id', /*checkAdmin,*/ (req, res) => {
     tool.executeQuery(
         `UPDATE theaters
         SET name='${req.body.name}', number_of_seats='${req.body.number_of_seats}'
         WHERE id=${req.params.id}`
     ).then((result)=>{
+        tool.executeQuery(`DELETE FROM hasfeature WHERE id_theater=${req.params.id}`).catch((err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+            return;
+        });
+        for(let feature of req.body.features){
+            tool.executeQuery(`INSERT INTO hasfeature(id_feature, id_theater) VALUES (${feature}, ${req.params.id})`).catch(
+                (err) => {
+                    res.status(400).json({
+                        message: "error occurred",
+                        error: err
+                    });
+                    return;
+                }
+            )
+        }
         res.status(200).json({
             messsage:`Theater with id=${req.params.id} UPDATED`
         });
