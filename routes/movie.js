@@ -100,6 +100,34 @@ router.get('/detailseats/:showId', /*checkUser,*/ (req, res) => {
         console.log(err);
         res.status(400).send(err);
     })
-})
+});
+
+router.delete('/:id', /*checkAdmin,*/ (req, res) => {
+    tool.executeQuery(
+        `SELECT id FROM movies WHERE id=${req.params.id}`
+    ).then((result) => {
+        if(result.rowCount === 0){
+            res.status(400).json({
+                message: `Movie with id=${req.params.id} not found`
+            });
+        } else {
+            tool.executeQuery(`DELETE FROM movies WHERE id=${req.params.id}`).then((finalResult) => {
+                res.status(200).json({
+                    message: `Movie with id=${req.params.id} DELETED`
+                }); 
+            }).catch((err) => {
+                res.status(400).json({
+                    message: "error occurred",
+                    error: err
+                });
+            });
+        }
+    }).catch((err) => {
+        res.status(400).json({
+            message: "error occurred",
+            error: err
+        });
+    })
+});
 
 module.exports = router;
