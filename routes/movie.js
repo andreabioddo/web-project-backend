@@ -1,6 +1,6 @@
 let tool = require('../tools');
 const express = require('express');
-const { /*checkUser,*/ checkAdmin } = require('../check_auth');
+const { checkUser, checkAdmin } = require('../check_auth');
 const router = express.Router();
 
 /** Return an array of users */
@@ -22,9 +22,15 @@ router.get('/:id', /*checkUser,*/ (req, res) => {
     tool.executeQuery(
         `SELECT * FROM movies WHERE id=${req.params.id}`
     ).then((result) => {
-        res.status(200).send(
-            result.rows[0]
-        );
+        if(result.rowCount === 0){
+            res.status(400).json({
+                message: `Movie with id=${req.params.id} not found`
+            });
+        } else {
+            res.status(200).send(
+                result.rows[0]
+            );
+        }
     }).catch((err) => {
         console.log(err);
         res.status(400).send(err);
@@ -56,7 +62,13 @@ router.get('/show/:movieId', /*checkUser,*/ (req, res) => {
         INNER JOIN movies as m ON m.id=s.id_movie
         WHERE m.id=${req.params.movieId}`
     ).then((res1)=>{
-        res.status(200).send(res1.rows);
+        if(res1.rowCount === 0){
+            res.status(400).json({
+                message: `Movie with id=${req.params.movieId} not found`
+            });
+        } else {
+            res.status(200).send(res1.rows);
+        }
     }).catch((err) => {
         console.log(err);
         res.status(400).send(err);
