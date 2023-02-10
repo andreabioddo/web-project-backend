@@ -235,6 +235,7 @@ router.post('/:theaterId/addseat', /*checkAdmin,*/ (req, res) => {
 });
 
 router.delete('/:theaterId/removeseat/:seatId', /*checkAdmin,*/ (req, res)=>{
+    console.log(`1. SELECT * FROM seats WHERE id=${req.params.seatId} AND id_theater=${req.params.theaterId}`);
     tool.executeQuery(
         `SELECT * FROM seats WHERE id=${req.params.seatId} AND id_theater=${req.params.theaterId}`
     ).then((result) => {
@@ -245,8 +246,9 @@ router.delete('/:theaterId/removeseat/:seatId', /*checkAdmin,*/ (req, res)=>{
             });
             return;
         }
-        tool.executeQuery(`DELETE FROM seat WHERE id=${req.params.seatId} AND id_theater=${req.params.theaterId}`)
+        tool.executeQuery(`DELETE FROM seats WHERE id=${req.params.seatId} AND id_theater=${req.params.theaterId}`)
         .then((result)=>{
+            console.log(`2. SELECT * FROM seats WHERE id=${req.params.seatId} AND id_theater=${req.params.theaterId}`);
             res.status(200).json({
                 message:`seat with id=${req.params.seatId} and id_theater=${req.params.theaterId} DELETED`
             });
