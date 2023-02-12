@@ -57,6 +57,30 @@ router.post('/add', /*checkAdmin,*/ (req, res) => {
     })
 });
 
+router.put('/:id', /*checkAdmin,*/ (req, res) => {
+    tool.checkExistingInTable("movies", req.params.movieId).then((result) => {
+        tool.executeQuery(
+            `UPDATE movies 
+            SET name='${req.body.name}', description='${req.body.description}',duration=${req.body.duration}, age=${req.body.age}
+            WHERE id=${req.params.id}`
+        ).then((result) => {
+            res.status(200).json({
+                message: `movie with id=${req.params.id} UPDATED`
+            });
+        }).catch((err) => {
+            console.log(err);
+            res.status(400).send(err);
+        })
+    }).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+        }
+    )
+});
+
 router.get('/show/:movieId', /*checkUser,*/ (req, res) => {
     tool.checkExistingInTable("movies", req.params.movieId).then((result) => {
         tool.executeQuery(
