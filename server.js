@@ -32,6 +32,9 @@ app.use("/review", reviewRoute);
 const ticketRoute = require('./routes/ticket');
 app.use("/ticket", ticketRoute);
 
+const showRoute = require('./routes/show');
+app.use("/show", showRoute);
+
 // get products for logged in user as a list of JSON entries
 app.get("/testuser", checkAuth.checkUser ,(req, res) => {
     res.status(200).send("Everything is working!");

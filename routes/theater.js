@@ -9,7 +9,7 @@ router.get('/allfeatures', /*checkAdmin,*/ (req, res) => {
         'SELECT * FROM features'
     ).then((result) => {
         res.status(200).send(result.rows);
-        return;
+        
     }).catch((err) => {
         console.log("14");
         console.log(err);
@@ -17,7 +17,7 @@ router.get('/allfeatures', /*checkAdmin,*/ (req, res) => {
             message: "error occurred",
             error: err
         });
-        return;
+        
     })
 });
 
@@ -38,7 +38,7 @@ router.get('/', /*checkUser,*/ (req, res) => {
             r.features = tmp.rows;
         }
         res.status(200).send(result.rows);
-        return;
+        
     }).catch((err) => {
         console.log("43");
         console.log(err);
@@ -46,7 +46,7 @@ router.get('/', /*checkUser,*/ (req, res) => {
             message: "error occurred",
             error: err
         });
-        return;
+        
     })
 });
 
@@ -69,13 +69,13 @@ router.get('/:id', /*checkUser,*/ (req, res) => {
                 intermediateResult.seats = res2.rows;
                 intermediateResult.hasFeature = res3.rows;
                 res.status(200).send(intermediateResult);
-                return;
+                
             }).catch((err) => {
                 res.status(400).json({
                     message: "error occurred",
                     error: err
                 });
-                return;
+                
             })
         }).catch((err) => {
             console.log("81");
@@ -84,7 +84,7 @@ router.get('/:id', /*checkUser,*/ (req, res) => {
                 message: "error occurred",
                 error: err
             });
-            return;
+            
         })
     }).catch((err) => {
         console.log("90");
@@ -93,7 +93,7 @@ router.get('/:id', /*checkUser,*/ (req, res) => {
             message: "error occurred",
             error: err
         });
-        return;
+        
     })
 });
 
@@ -115,7 +115,7 @@ router.post('/add', /*checkAdmin,*/ (req, res) => {
                         message: "error occurred",
                         error: err
                     });
-                    return;
+                    
                 }
             )
         }        
@@ -123,7 +123,7 @@ router.post('/add', /*checkAdmin,*/ (req, res) => {
             message: "new theater created",
             lastId: lastId
         });
-        return;
+        
     }).catch((err) => {
         console.log("129");
         console.log(err);
@@ -131,7 +131,7 @@ router.post('/add', /*checkAdmin,*/ (req, res) => {
             message: "error occurred",
             error: err
         });
-        return;
+        
     })
 });
 
@@ -144,14 +144,14 @@ router.delete('/:id', /*checkAdmin,*/ (req, res)=>{
                 message: "error occurred",
                 error: `No theater with id=${req.params.id}`
             });
-            return;
+            
         }
         tool.executeQuery(`DELETE FROM theaters WHERE id=${req.params.id}`)
         .then((result)=>{
             res.status(200).json({
                 message:`Theater with id=${req.params.id} DELETED`
             });
-            return;
+            
         }).catch((err)=>{
             console.log("157");
             console.log(err);
@@ -159,7 +159,7 @@ router.delete('/:id', /*checkAdmin,*/ (req, res)=>{
                 message: "error occurred",
                 error: err
             });
-            return;
+            
         })
     }).catch((err)=>{
         console.log(err);
@@ -168,7 +168,7 @@ router.delete('/:id', /*checkAdmin,*/ (req, res)=>{
             messsage:"An error occurred",
             error:err
         });
-        return;
+        
     })
 });
 
@@ -183,7 +183,7 @@ router.put('/:id', /*checkAdmin,*/ (req, res) => {
                 message: "error occurred",
                 error: err
             });
-            return;
+            
         });
         for(let feature of req.body.features){
             tool.executeQuery(`INSERT INTO hasfeature(id_feature, id_theater) VALUES (${feature}, ${req.params.id})`).catch(
@@ -192,14 +192,14 @@ router.put('/:id', /*checkAdmin,*/ (req, res) => {
                         message: "error occurred",
                         error: err
                     });
-                    return;
+                    
                 }
             )
         }
         res.status(200).json({
             messsage:`Theater with id=${req.params.id} UPDATED`
         });
-        return;
+        
     }).catch((err)=>{
         console.log("187");
         console.log(err);
@@ -207,7 +207,7 @@ router.put('/:id', /*checkAdmin,*/ (req, res) => {
             messsage:"An error occurred",
             error:err
         });
-        return;
+        
     })
 });
 
@@ -222,7 +222,7 @@ router.post('/:theaterId/addseat', /*checkAdmin,*/ (req, res) => {
         res.status(200).json({
             message:"Seats added"
         });
-        return;
+        
     }).catch((err)=>{
         console.log("207");
         console.log(err);
@@ -230,7 +230,7 @@ router.post('/:theaterId/addseat', /*checkAdmin,*/ (req, res) => {
             messsage:"An error occurred",
             error:err
         });
-        return;
+        
     })
 });
 
@@ -244,7 +244,7 @@ router.delete('/:theaterId/removeseat/:seatId', /*checkAdmin,*/ (req, res)=>{
                 message: "error occurred",
                 error: `No seat with id=${req.params.seatId} and id_theater=${req.params.theaterId} found`
             });
-            return;
+            
         }
         tool.executeQuery(`DELETE FROM seats WHERE id=${req.params.seatId} AND id_theater=${req.params.theaterId}`)
         .then((result)=>{
@@ -252,7 +252,7 @@ router.delete('/:theaterId/removeseat/:seatId', /*checkAdmin,*/ (req, res)=>{
             res.status(200).json({
                 message:`seat with id=${req.params.seatId} and id_theater=${req.params.theaterId} DELETED`
             });
-            return;
+            
         }).catch((err)=>{
             console.log("235");
             console.log(err);
@@ -260,7 +260,7 @@ router.delete('/:theaterId/removeseat/:seatId', /*checkAdmin,*/ (req, res)=>{
                 message: "error occurred",
                 error: err
             });
-            return;
+            
         })
     }).catch((err)=>{
         console.log("244");
@@ -269,7 +269,7 @@ router.delete('/:theaterId/removeseat/:seatId', /*checkAdmin,*/ (req, res)=>{
             message: "error occurred",
             error: err
         });
-        return;
+        
     })
 });
 
@@ -297,7 +297,7 @@ router.put('/:theaterId/updateseat/:seatId', /*checkAdmin,*/ (req, res) => {
                 message: "error occurred",
                 error: err
             });
-            return;
+            
         })
     }).catch((err)=>{
         console.log("281");
@@ -306,7 +306,7 @@ router.put('/:theaterId/updateseat/:seatId', /*checkAdmin,*/ (req, res) => {
             message: "error occurred",
             error: err
         });
-        return;
+        
     })
 });
 
@@ -316,7 +316,7 @@ router.get('/seats/:theaterId', /*checkUser,*/ (req, res) => {
         `SELECT * FROM seats WHERE id_theater=${req.params.theaterId}`
     ).then((res1)=>{
         res.status(200).send(res1.rows);
-        return;
+        
     }).catch((err)=>{
         console.log("299");
         console.log(err);
@@ -324,7 +324,7 @@ router.get('/seats/:theaterId', /*checkUser,*/ (req, res) => {
             message: "error occurred",
             error: err
         });
-        return;
+        
     })
 });
 
