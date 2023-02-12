@@ -5,7 +5,12 @@ const router = express.Router();
 
 
 router.get('/qrcode/:ticketId', /*checkUser,*/ (req, res) => {
-    tool.checkExistingInTable("tickets", req.params.ticketId).catch(
+    tool.checkExistingInTable("tickets", req.params.ticketId).then((result) => {
+        let code = tool.createTicketQR(result.rows[0].id_user, result.rows[0].id_show, result.rows[0].id_seat, req.params.ticketId);
+        res.status(200).json(
+            {"code":code}
+        );
+    }).catch(
         (err) => {
             res.status(400).json({
                 message: "error occurred",
@@ -13,11 +18,6 @@ router.get('/qrcode/:ticketId', /*checkUser,*/ (req, res) => {
             });
         }
     )
-    let code = tool.createTicketQR(result.rows[0].id_user, result.rows[0].id_show, result.rows[0].id_seat, req.params.ticketId);
-    res.status(200).json(
-        {"code":code}
-    );
-
 });
 
 
@@ -78,7 +78,22 @@ router.get('/ofuser', /*checkUser,*/ (req, res) => {
 
 /** Return a json with the detail of the user with id=id given as param*/
 router.get('/:id', /*checkUser,*/ (req, res) => {
-    tool.checkExistingInTable("tickets", req.params.id).catch(
+    tool.checkExistingInTable("tickets", req.params.id).then((result) => {
+        tool.executeQuery(
+            `SELECT t.id, t.price, u.name, s.date, s.time 
+            FROM tickets t
+            JOIN users u ON u.id=t.id_user
+            JOIN shows s ON s.id=t.id_show
+            WHERE t.id=${req.params.id}`
+        ).then((result) => {
+            res.status(200).send(
+                result.rows[0]
+            );
+        }).catch((err) => {
+            console.log(err);
+            res.status(400).send(err);
+        })
+    }).catch(
         (err) => {
             res.status(400).json({
                 message: "error occurred",
@@ -86,20 +101,6 @@ router.get('/:id', /*checkUser,*/ (req, res) => {
             });
         }
     )
-    tool.executeQuery(
-        `SELECT t.id, t.price, u.name, s.date, s.time 
-        FROM tickets t
-        JOIN users u ON u.id=t.id_user
-        JOIN shows s ON s.id=t.id_show
-        WHERE t.id=${req.params.id}`
-    ).then((result) => {
-        res.status(200).send(
-            result.rows[0]
-        );
-    }).catch((err) => {
-        console.log(err);
-        res.status(400).send(err);
-    })
 });
 
 

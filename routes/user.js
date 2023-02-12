@@ -22,7 +22,21 @@ router.get('/', /*checkAuth.checkAdmin,*/ (req, res) => {
 
 
 router.put('/updateuser/:id', /*checkAuth.checkAdmin,*/ (req, res) => {
-    tool.checkExistingInTable("users", req.params.id).catch(
+    tool.checkExistingInTable("users", req.params.id).then((result) => {
+        tool.executeQuery(
+            `UPDATE users 
+            SET isadmin='true'
+            WHERE id=${req.params.id}`
+        ).then((result) => {
+            res.status(200).json({
+                message: "update successful",
+                id:req.params.id
+            });
+        }).catch((err)=> {
+            console.log(err);
+            res.status(400).send(err);
+        })
+    }).catch(
         (err) => {
             res.status(400).json({
                 message: "error occurred",
@@ -30,24 +44,22 @@ router.put('/updateuser/:id', /*checkAuth.checkAdmin,*/ (req, res) => {
             });
         }
     )
-    tool.executeQuery(
-        `UPDATE users 
-        SET isadmin='true'
-        WHERE id=${req.params.id}`
-    ).then((result) => {
-        res.status(200).json({
-            message: "update successful",
-            id:req.params.id
-        });
-    }).catch((err)=> {
-        console.log(err);
-        res.status(400).send(err);
-    })
 });
 
 /** Return a json with the detail of the user with id=id given as param*/
 router.get('/:id', /*checkAuth.checkAdmin,*/ (req, res) => {
-    tool.checkExistingInTable("users", req.params.id).catch(
+    tool.checkExistingInTable("users", req.params.id).then((result) => {
+        tool.executeQuery(
+            `SELECT id, name, email, isadmin FROM users WHERE id=${req.params.id}`
+        ).then((result) => {
+            res.status(200).send(
+                result.rows[0]
+            );
+        }).catch((err) => {
+            console.log(err);
+            res.status(400).send(err);
+        })
+    }).catch(
         (err) => {
             res.status(400).json({
                 message: "error occurred",
@@ -55,16 +67,6 @@ router.get('/:id', /*checkAuth.checkAdmin,*/ (req, res) => {
             });
         }
     )
-    tool.executeQuery(
-        `SELECT id, name, email, isadmin FROM users WHERE id=${req.params.id}`
-    ).then((result) => {
-        res.status(200).send(
-            result.rows[0]
-        );
-    }).catch((err) => {
-        console.log(err);
-        res.status(400).send(err);
-    })
 });
 
 /**Add an user taken the details from the body of the request. It return a message and the last id*/
@@ -87,7 +89,19 @@ router.post('/register', hashPassword, (req, res) => {
 
 
 router.delete('/:id', /*checkAuth.checkAdmin,*/ (req, res) => {
-    tool.checkExistingInTable("users", req.params.id).catch(
+    tool.checkExistingInTable("users", req.params.id).then((result) => {
+        tool.executeQuery(`DELETE FROM users WHERE id=${req.params.id}`)
+        .then((result)=>{
+            res.status(200).json({
+                message:`User with id=${req.params.id} DELETED`
+            });
+        }).catch((err)=>{
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+        })
+    }).catch(
         (err) => {
             res.status(400).json({
                 message: "error occurred",
@@ -95,17 +109,6 @@ router.delete('/:id', /*checkAuth.checkAdmin,*/ (req, res) => {
             });
         }
     )
-    tool.executeQuery(`DELETE FROM users WHERE id=${req.params.id}`)
-    .then((result)=>{
-        res.status(200).json({
-            message:`User with id=${req.params.id} DELETED`
-        });
-    }).catch((err)=>{
-        res.status(400).json({
-            message: "error occurred",
-            error: err
-        });
-    })
 });
 
 module.exports = router;

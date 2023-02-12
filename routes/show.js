@@ -21,34 +21,35 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-    tool.checkExistingInTable("shows", req.params.id).catch(
+    tool.checkExistingInTable("shows", req.params.id).then((result) => {
+        tool.executeQuery(  `SELECT * FROM shows s 
+                            JOIN movies m ON m.id=s.id_movie
+                            JOIN theaters t ON t.id=s.id_theater
+                            WHERE s.id=${req.params.id}`
+        ).then((result) => {
+            if(result.rowCount <= 0){
+                res.status(400).json({
+                    message: "error occurred",
+                    error: `No show with id=${req.params.id} found`
+                });
+            } else {
+                res.send(result.rows[0])
+            }
+        }).catch((err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+        })
+    }).catch(
         (err) => {
             res.status(400).json({
                 message: "error occurred",
                 error: err
             });
-            return;
         }
     )
-    tool.executeQuery(  `SELECT * FROM shows s 
-                        JOIN movies m ON m.id=s.id_movie
-                        JOIN theaters t ON t.id=s.id_theater
-                        WHERE s.id=${req.params.id}`
-    ).then((result) => {
-        if(result.rowCount <= 0){
-            res.status(400).json({
-                message: "error occurred",
-                error: `No show with id=${req.params.id} found`
-            });
-        } else {
-            res.send(result.rows[0])
-        }
-    }).catch((err) => {
-        res.status(400).json({
-            message: "error occurred",
-            error: err
-        });
-    })
+    
 });
 
 router.post('/add', (req, res) => {
@@ -70,50 +71,50 @@ router.post('/add', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-    tool.checkExistingInTable("shows", req.params.id).catch(
+    tool.checkExistingInTable("shows", req.params.id).then((result) => {
+        tool.executeQuery(
+            `DELETE FROM shows WHERE id=${req.params.id}`
+        ).then((result) => {
+            res.status(200).json({
+                message: `show with id=${req.params.id} DELETED`
+            });
+        }).catch((err) => {
+            console.log(err);
+            res.status(400).send(err);
+        })
+    }).catch(
         (err) => {
             res.status(400).json({
                 message: "error occurred",
                 error: err
             });
-            return;
         }
     )
-    tool.executeQuery(
-        `DELETE FROM shows WHERE id=${req.params.id}`
-    ).then((result) => {
-        res.status(200).json({
-            message: `show with id=${req.params.id} DELETED`
-        });
-    }).catch((err) => {
-        console.log(err);
-        res.status(400).send(err);
-    })
 });
 
 
 router.put('/:id', (req, res) => {
-    tool.checkExistingInTable("shows", req.params.id).catch(
+    tool.checkExistingInTable("shows", req.params.id).then((result) => {
+        tool.executeQuery(
+            `UPDATE shows 
+            SET id_theater=${req.body.id_theater}, id_movie=${req.body.id_movie}, date='${req.body.date}', time='${req.body.time}'
+            WHERE id=${req.params.id}`
+        ).then((result) => {
+            res.status(200).json({
+                message: `show with id=${req.params.id} UPDATED`
+            });
+        }).catch((err) => {
+            console.log(err);
+            res.status(400).send(err);
+        })
+    }).catch(
         (err) => {
             res.status(400).json({
                 message: "error occurred",
                 error: err
             });
-            return;
         }
     )
-    tool.executeQuery(
-        `UPDATE shows 
-        SET id_theater=${req.body.id_theater}, id_movie=${req.body.id_movie}, date='${req.body.date}', time='${req.body.time}'
-        WHERE id=${req.params.id}`
-    ).then((result) => {
-        res.status(200).json({
-            message: `show with id=${req.params.id} UPDATED`
-        });
-    }).catch((err) => {
-        console.log(err);
-        res.status(400).send(err);
-    })
 });
 
 
