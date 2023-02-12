@@ -41,7 +41,6 @@ router.get('/:id', (req, res) => {
                 error: `No show with id=${req.params.id} found`
             });
         } else {
-            result.rows[0].date = new Date();
             res.send(result.rows[0])
         }
     }).catch((err) => {
