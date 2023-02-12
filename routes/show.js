@@ -8,7 +8,7 @@ const { checkInjection } = require('../middleware');
 
 
 router.get('/', (req, res) => {
-    tool.executeQuery(`SELECT * FROM shows s 
+    tool.executeQuery(`SELECT t.name as theatername, m.name as moviename, s.* FROM shows s 
     JOIN movies m ON m.id=s.id_movie
     JOIN theaters t ON t.id=s.id_theater`).then((result) => {
         res.send(result.rows);
@@ -22,7 +22,7 @@ router.get('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
     tool.checkExistingInTable("shows", req.params.id).then((result) => {
-        tool.executeQuery(  `SELECT * FROM shows s 
+        tool.executeQuery(  `t.name as theatername, m.name as moviename, s.* FROM shows s
                             JOIN movies m ON m.id=s.id_movie
                             JOIN theaters t ON t.id=s.id_theater
                             WHERE s.id=${req.params.id}`
