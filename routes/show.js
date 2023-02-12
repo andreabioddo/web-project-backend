@@ -21,6 +21,15 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
+    tool.checkExistingInTable("shows", req.params.id).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+            return;
+        }
+    )
     tool.executeQuery(  `SELECT * FROM shows s 
                         JOIN movies m ON m.id=s.id_movie
                         JOIN theaters t ON t.id=s.id_theater
@@ -32,7 +41,8 @@ router.get('/:id', (req, res) => {
                 error: `No show with id=${req.params.id} found`
             });
         } else {
-            res.send(result.rows)
+            result.rows[0].date = new Date();
+            res.send(result.rows[0])
         }
     }).catch((err) => {
         res.status(400).json({
@@ -59,6 +69,15 @@ router.post('/add', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
+    tool.checkExistingInTable("shows", req.params.id).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+            return;
+        }
+    )
     tool.executeQuery(
         `DELETE FROM shows WHERE id=${req.params.id}`
     ).then((result) => {
@@ -73,6 +92,15 @@ router.delete('/:id', (req, res) => {
 
 
 router.put('/:id', (req, res) => {
+    tool.checkExistingInTable("shows", req.params.id).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+            return;
+        }
+    )
     tool.executeQuery(
         `UPDATE shows 
         SET id_theater=${req.body.id_theater}, id_movie=${req.body.id_movie}, date='${req.body.date}', time='${req.body.time}'

@@ -40,3 +40,20 @@ module.exports.compareTexts = function(plaintext, hashedText) {
 module.exports.parseJwt = function(token) {
     return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 }
+
+module.exports.checkExistingInTable = function(table, id) {
+    return new Promise((resolve, reject) => {
+        if(table != "shows" && table != "users" && table != "tickets" && table != "movies" && table != "theaters" && table != "ratings", table!="seats"){
+            reject(`Table ${table} doesn't exist`);
+        }
+        this.executeQuery(`SELECT * FROM ${table} WHERE id=${id}`).then(
+            (res) => {
+                if(res.rowCount <= 0){
+                    reject(`id=${id} not found in ${table}`);
+                } else {
+                    resolve();
+                }
+            }
+        ).catch((err) => reject(err))
+    })
+}

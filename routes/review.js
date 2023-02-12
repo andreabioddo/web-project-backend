@@ -3,7 +3,16 @@ const express = require('express');
 const router = express.Router();
 const checkAuth = require('../check_auth');
 
-router.get('/:movieId', /*checkAuth.checkUser,*/ (req, res) => {    
+router.get('/:movieId', /*checkAuth.checkUser,*/ (req, res) => {
+    tool.checkExistingInTable("movies", req.params.movieId).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+            return;
+        }
+    )  
     tool.executeQuery(`
         SELECT u.id as userid, u.name, r.stars, r.review FROM ratings as r 
         JOIN users as u ON u.id=r.id_user
@@ -23,6 +32,15 @@ router.get('/:movieId', /*checkAuth.checkUser,*/ (req, res) => {
 
 
 router.post('/:movieId/add', /*checkAuth.checkUser,*/ (req, res) => {
+    tool.checkExistingInTable("movies", req.params.movieId).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+            return;
+        }
+    )
     let userData = checkAuth.returnJWTData(req.headers.authorization);
     tool.executeQuery(`
         INSERT INTO ratings(stars, review, id_user, id_movie)

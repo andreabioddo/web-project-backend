@@ -22,6 +22,14 @@ router.get('/', /*checkAuth.checkAdmin,*/ (req, res) => {
 
 
 router.put('/updateuser/:id', /*checkAuth.checkAdmin,*/ (req, res) => {
+    tool.checkExistingInTable("users", req.params.id).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+        }
+    )
     tool.executeQuery(
         `UPDATE users 
         SET isadmin='true'
@@ -39,6 +47,14 @@ router.put('/updateuser/:id', /*checkAuth.checkAdmin,*/ (req, res) => {
 
 /** Return a json with the detail of the user with id=id given as param*/
 router.get('/:id', /*checkAuth.checkAdmin,*/ (req, res) => {
+    tool.checkExistingInTable("users", req.params.id).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+        }
+    )
     tool.executeQuery(
         `SELECT id, name, email, isadmin FROM users WHERE id=${req.params.id}`
     ).then((result) => {
@@ -71,26 +87,19 @@ router.post('/register', hashPassword, (req, res) => {
 
 
 router.delete('/:id', /*checkAuth.checkAdmin,*/ (req, res) => {
-    tool.executeQuery(`SELECT id FROM users WHERE id=${req.params.id}`)
-    .then((result)=>{
-        if(result.rowCount <= 0){
-            res.status(400).json({
-                message: "error occurred",
-                error: `No user with id=${req.params.id} found`
-            });
-            return;
-        }
-        tool.executeQuery(`DELETE FROM users WHERE id=${req.params.id}`)
-        .then((result)=>{
-            res.status(200).json({
-                message:`User with id=${req.params.id} DELETED`
-            });
-        }).catch((err)=>{
+    tool.checkExistingInTable("users", req.params.id).catch(
+        (err) => {
             res.status(400).json({
                 message: "error occurred",
                 error: err
             });
-        })
+        }
+    )
+    tool.executeQuery(`DELETE FROM users WHERE id=${req.params.id}`)
+    .then((result)=>{
+        res.status(200).json({
+            message:`User with id=${req.params.id} DELETED`
+        });
     }).catch((err)=>{
         res.status(400).json({
             message: "error occurred",

@@ -5,31 +5,24 @@ const router = express.Router();
 
 
 router.get('/qrcode/:ticketId', /*checkUser,*/ (req, res) => {
-    tool.executeQuery(`
-        SELECT * FROM tickets
-        WHERE id=${req.params.ticketId}
-    `).then((result) => {
-        if(result.rowCount === 0){
-            res.status(400).json(
-                {"error": `no ticket with id=${req.params.ticketId} found`}
-            );
-        } else {
-            let code = tool.createTicketQR(result.rows[0].id_user, result.rows[0].id_show, result.rows[0].id_seat, req.params.ticketId);
-            res.status(200).json(
-                {"code":code}
-            );
+    tool.checkExistingInTable("tickets", req.params.ticketId).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
         }
+    )
+    let code = tool.createTicketQR(result.rows[0].id_user, result.rows[0].id_show, result.rows[0].id_seat, req.params.ticketId);
+    res.status(200).json(
+        {"code":code}
+    );
 
-    }).catch((err) => {
-        console.log(err);
-        res.status(400).send(err);
-    })
 });
 
 
 router.post('/checkqr/:idShow', /*checkAdmin,*/ (req, res) => {
     let decodedData = tool.decodeTicketQR(req.body.qrcode);
-    console.log(decodedData);
     tool.executeQuery(
         `SELECT * FROM tickets 
         WHERE id=${decodedData.ticketId} AND id_seat=${decodedData.seatId} AND id_show=${decodedData.showId} AND id_user=${decodedData.userId}`
@@ -85,6 +78,14 @@ router.get('/ofuser', /*checkUser,*/ (req, res) => {
 
 /** Return a json with the detail of the user with id=id given as param*/
 router.get('/:id', /*checkUser,*/ (req, res) => {
+    tool.checkExistingInTable("tickets", req.params.id).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+        }
+    )
     tool.executeQuery(
         `SELECT t.id, t.price, u.name, s.date, s.time 
         FROM tickets t

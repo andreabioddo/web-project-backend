@@ -19,18 +19,21 @@ router.get('/', /*checkUser,*/ (req, res) => {
 
 /** Return a json with the detail of the user with id=id given as param*/
 router.get('/:id', /*checkUser,*/ (req, res) => {
+    tool.checkExistingInTable("movies", req.params.id).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+            return;
+        }
+    )
     tool.executeQuery(
         `SELECT * FROM movies WHERE id=${req.params.id}`
     ).then((result) => {
-        if(result.rowCount === 0){
-            res.status(400).json({
-                message: `Movie with id=${req.params.id} not found`
-            });
-        } else {
-            res.status(200).send(
-                result.rows[0]
-            );
-        }
+        res.status(200).send(
+            result.rows[0]
+        );
     }).catch((err) => {
         console.log(err);
         res.status(400).send(err);
@@ -55,6 +58,15 @@ router.post('/add', /*checkAdmin,*/ (req, res) => {
 });
 
 router.get('/show/:movieId', /*checkUser,*/ (req, res) => {
+    tool.checkExistingInTable("movies", req.params.movieId).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+            return;
+        }
+    )
     tool.executeQuery(
         `SELECT s.id as showId, t.name as theaterName, t.id as theaterId, t.number_of_seats, s.date as date, s.time as time 
         FROM shows as s
@@ -62,13 +74,7 @@ router.get('/show/:movieId', /*checkUser,*/ (req, res) => {
         INNER JOIN movies as m ON m.id=s.id_movie
         WHERE m.id=${req.params.movieId}`
     ).then((res1)=>{
-        if(res1.rowCount === 0){
-            res.status(400).json({
-                message: `Movie with id=${req.params.movieId} not found`
-            });
-        } else {
-            res.status(200).send(res1.rows);
-        }
+        res.status(200).send(res1.rows);
     }).catch((err) => {
         console.log(err);
         res.status(400).send(err);
@@ -76,6 +82,15 @@ router.get('/show/:movieId', /*checkUser,*/ (req, res) => {
 });
 
 router.get('/detailseats/:showId', /*checkUser,*/ (req, res) => {
+    tool.checkExistingInTable("shows", req.params.showId).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+            return;
+        }
+    )
     tool.executeQuery(
         `SELECT s.id as showId, t.name as theaterName, t.id as theaterId, t.number_of_seats, s.date as date, s.time as time 
         FROM shows as s
@@ -115,25 +130,28 @@ router.get('/detailseats/:showId', /*checkUser,*/ (req, res) => {
 });
 
 router.delete('/:id', /*checkAdmin,*/ (req, res) => {
+    tool.checkExistingInTable("movies", req.params.id).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+            return;
+        }
+    )
     tool.executeQuery(
         `SELECT id FROM movies WHERE id=${req.params.id}`
     ).then((result) => {
-        if(result.rowCount === 0){
+        tool.executeQuery(`DELETE FROM movies WHERE id=${req.params.id}`).then((finalResult) => {
+            res.status(200).json({
+                message: `Movie with id=${req.params.id} DELETED`
+            }); 
+        }).catch((err) => {
             res.status(400).json({
-                message: `Movie with id=${req.params.id} not found`
+                message: "error occurred",
+                error: err
             });
-        } else {
-            tool.executeQuery(`DELETE FROM movies WHERE id=${req.params.id}`).then((finalResult) => {
-                res.status(200).json({
-                    message: `Movie with id=${req.params.id} DELETED`
-                }); 
-            }).catch((err) => {
-                res.status(400).json({
-                    message: "error occurred",
-                    error: err
-                });
-            });
-        }
+        });
     }).catch((err) => {
         res.status(400).json({
             message: "error occurred",

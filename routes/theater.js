@@ -1,7 +1,7 @@
 let tool = require('../tools');
 const express = require('express');
 const pool = require('../pool');
-const { /*checkUser,*/ checkAdmin } = require('../check_auth');
+const { checkUser, checkAdmin } = require('../check_auth');
 const router = express.Router();
 
 router.get('/allfeatures', /*checkAdmin,*/ (req, res) => {
@@ -53,6 +53,15 @@ router.get('/', /*checkUser,*/ (req, res) => {
 
 /** Return a json with the detail of the theater with id=id given as param*/
 router.get('/:id', /*checkUser,*/ (req, res) => {
+    tool.checkExistingInTable("theaters", req.params.id).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+            return;
+        }
+    );
     tool.executeQuery(
         `SELECT * FROM theaters WHERE id=${req.params.id}`
     ).then((res1) => {
@@ -78,7 +87,6 @@ router.get('/:id', /*checkUser,*/ (req, res) => {
                 
             })
         }).catch((err) => {
-            console.log("81");
             console.log(err);
             res.status(400).json({
                 message: "error occurred",
@@ -87,7 +95,6 @@ router.get('/:id', /*checkUser,*/ (req, res) => {
             
         })
     }).catch((err) => {
-        console.log("90");
         console.log(err);
         res.status(400).json({
             message: "error occurred",
@@ -109,7 +116,6 @@ router.post('/add', /*checkAdmin,*/ (req, res) => {
         for(let feature of req.body.features){
             tool.executeQuery(`INSERT INTO hasfeature(id_feature, id_theater) VALUES (${feature}, ${lastId})`).catch(
                 (err) => {
-                    console.log("113");
                     console.log(err);
                     res.status(400).json({
                         message: "error occurred",
@@ -125,8 +131,6 @@ router.post('/add', /*checkAdmin,*/ (req, res) => {
         });
         
     }).catch((err) => {
-        console.log("129");
-        console.log(err);
         res.status(400).json({
             message: "error occurred",
             error: err
@@ -136,43 +140,41 @@ router.post('/add', /*checkAdmin,*/ (req, res) => {
 });
 
 router.delete('/:id', /*checkAdmin,*/ (req, res)=>{
-    tool.executeQuery(
-        `SELECT * FROM theaters WHERE id=${req.params.id}`
-    ).then((result) => {
-        if(result.rowCount <= 0){
-            res.status(400).json({
-                message: "error occurred",
-                error: `No theater with id=${req.params.id}`
-            });
-            
-        }
-        tool.executeQuery(`DELETE FROM theaters WHERE id=${req.params.id}`)
-        .then((result)=>{
-            res.status(200).json({
-                message:`Theater with id=${req.params.id} DELETED`
-            });
-            
-        }).catch((err)=>{
-            console.log("157");
-            console.log(err);
+    tool.checkExistingInTable("theaters", req.params.id).catch(
+        (err) => {
             res.status(400).json({
                 message: "error occurred",
                 error: err
             });
-            
-        })
-    }).catch((err)=>{
-        console.log(err);
-        console.log("167");
-        res.status(400).json({
-            messsage:"An error occurred",
-            error:err
+            return;
+        }
+    );
+    tool.executeQuery(`DELETE FROM theaters WHERE id=${req.params.id}`)
+    .then((result)=>{
+        res.status(200).json({
+            message:`Theater with id=${req.params.id} DELETED`
         });
-        
+
+    }).catch((err)=>{
+        console.log("157");
+        console.log(err);
+        res.status(400).json({
+            message: "error occurred",
+            error: err
+        });
     })
 });
 
 router.put('/:id', /*checkAdmin,*/ (req, res) => {
+    tool.checkExistingInTable("theaters", req.params.id).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+            return;
+        }
+    );
     tool.executeQuery(
         `UPDATE theaters
         SET name='${req.body.name}', number_of_seats='${req.body.number_of_seats}'
@@ -212,9 +214,15 @@ router.put('/:id', /*checkAdmin,*/ (req, res) => {
 });
 
 router.post('/:theaterId/addseat', /*checkAdmin,*/ (req, res) => {
-    console.log(
-        `INSERT INTO seats (number, row, type, removable, id_theater)
-        VALUES(${req.body.number}, ${req.body.row}, '${req.body.type}', ${req.body.removale}, ${req.params.theaterId})`)
+    tool.checkExistingInTable("theaters", req.params.theaterId).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+            return;
+        }
+    );
     tool.executeQuery(
         `INSERT INTO seats (number, row, type, removable, id_theater)
         VALUES(${req.body.number}, ${req.body.row}, '${req.body.type}', ${req.body.removable}, ${req.params.theaterId})`
@@ -235,7 +243,6 @@ router.post('/:theaterId/addseat', /*checkAdmin,*/ (req, res) => {
 });
 
 router.delete('/:theaterId/removeseat/:seatId', /*checkAdmin,*/ (req, res)=>{
-    console.log(`1. SELECT * FROM seats WHERE id=${req.params.seatId} AND id_theater=${req.params.theaterId}`);
     tool.executeQuery(
         `SELECT * FROM seats WHERE id=${req.params.seatId} AND id_theater=${req.params.theaterId}`
     ).then((result) => {
@@ -312,14 +319,21 @@ router.put('/:theaterId/updateseat/:seatId', /*checkAdmin,*/ (req, res) => {
 
 
 router.get('/seats/:theaterId', /*checkUser,*/ (req, res) => {
+    tool.checkExistingInTable("theaters", req.params.theaterId).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+            return;
+        }
+    );
     tool.executeQuery(
         `SELECT * FROM seats WHERE id_theater=${req.params.theaterId}`
     ).then((res1)=>{
         res.status(200).send(res1.rows);
         
     }).catch((err)=>{
-        console.log("299");
-        console.log(err);
         res.status(400).json({
             message: "error occurred",
             error: err
