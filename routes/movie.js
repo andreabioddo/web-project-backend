@@ -58,7 +58,7 @@ router.post('/add', /*checkAdmin,*/ (req, res) => {
 });
 
 router.put('/:id', /*checkAdmin,*/ (req, res) => {
-    tool.checkExistingInTable("movies", req.params.movieId).then((result) => {
+    tool.checkExistingInTable("movies", req.params.id).then((result) => {
         tool.executeQuery(
             `UPDATE movies 
             SET name='${req.body.name}', description='${req.body.description}',duration=${req.body.duration}, age=${req.body.age}
