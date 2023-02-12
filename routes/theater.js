@@ -53,33 +53,33 @@ router.get('/', /*checkUser,*/ (req, res) => {
 
 /** Return a json with the detail of the theater with id=id given as param*/
 router.get('/:id', /*checkUser,*/ (req, res) => {
-    tool.checkExistingInTable("theaters", req.params.id).catch(
-        (err) => {
-            res.status(400).json({
-                message: "error occurred",
-                error: err
-            });
-            return;
-        }
-    );
-    tool.executeQuery(
-        `SELECT * FROM theaters WHERE id=${req.params.id}`
-    ).then((res1) => {
+    tool.checkExistingInTable("theaters", req.params.id).then((result) => {
         tool.executeQuery(
-            `SELECT * FROM seats WHERE id_theater=${req.params.id}`
-        ).then((res2)=>{
+            `SELECT * FROM theaters WHERE id=${req.params.id}`
+        ).then((res1) => {
             tool.executeQuery(
-                `SELECT f.name, f.id FROM features f 
-                JOIN hasfeature hf ON f.id=hf.id_feature
-                JOIN theaters t ON t.id=hf.id_theater
-                WHERE t.id=${req.params.id}`
-            ).then((res3) => {
-                let intermediateResult = res1.rows[0];
-                intermediateResult.seats = res2.rows;
-                intermediateResult.hasFeature = res3.rows;
-                res.status(200).send(intermediateResult);
-                
+                `SELECT * FROM seats WHERE id_theater=${req.params.id}`
+            ).then((res2)=>{
+                tool.executeQuery(
+                    `SELECT f.name, f.id FROM features f 
+                    JOIN hasfeature hf ON f.id=hf.id_feature
+                    JOIN theaters t ON t.id=hf.id_theater
+                    WHERE t.id=${req.params.id}`
+                ).then((res3) => {
+                    let intermediateResult = res1.rows[0];
+                    intermediateResult.seats = res2.rows;
+                    intermediateResult.hasFeature = res3.rows;
+                    res.status(200).send(intermediateResult);
+                    
+                }).catch((err) => {
+                    res.status(400).json({
+                        message: "error occurred",
+                        error: err
+                    });
+                    
+                })
             }).catch((err) => {
+                console.log(err);
                 res.status(400).json({
                     message: "error occurred",
                     error: err
@@ -94,14 +94,15 @@ router.get('/:id', /*checkUser,*/ (req, res) => {
             });
             
         })
-    }).catch((err) => {
-        console.log(err);
-        res.status(400).json({
-            message: "error occurred",
-            error: err
-        });
-        
-    })
+    }).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+        }
+    );
+    
 });
 
 /**Add an theater taken the details from the body of the request. It return a message and the last id*/
@@ -140,106 +141,106 @@ router.post('/add', /*checkAdmin,*/ (req, res) => {
 });
 
 router.delete('/:id', /*checkAdmin,*/ (req, res)=>{
-    tool.checkExistingInTable("theaters", req.params.id).catch(
+    tool.checkExistingInTable("theaters", req.params.id)
+    .then((result) => {
+        tool.executeQuery(`DELETE FROM theaters WHERE id=${req.params.id}`)
+        .then((result)=>{
+            res.status(200).json({
+                message:`Theater with id=${req.params.id} DELETED`
+            });
+        }).catch((err)=>{
+            console.log("157");
+            console.log(err);
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+        })
+    }).catch(
         (err) => {
             res.status(400).json({
                 message: "error occurred",
                 error: err
             });
-            return;
         }
     );
-    tool.executeQuery(`DELETE FROM theaters WHERE id=${req.params.id}`)
-    .then((result)=>{
-        res.status(200).json({
-            message:`Theater with id=${req.params.id} DELETED`
-        });
-
-    }).catch((err)=>{
-        console.log("157");
-        console.log(err);
-        res.status(400).json({
-            message: "error occurred",
-            error: err
-        });
-    })
 });
 
 router.put('/:id', /*checkAdmin,*/ (req, res) => {
-    tool.checkExistingInTable("theaters", req.params.id).catch(
-        (err) => {
-            res.status(400).json({
-                message: "error occurred",
-                error: err
+    tool.checkExistingInTable("theaters", req.params.id).then((result) => {
+        tool.executeQuery(
+            `UPDATE theaters
+            SET name='${req.body.name}', number_of_seats='${req.body.number_of_seats}'
+            WHERE id=${req.params.id}`
+        ).then((result)=>{
+            tool.executeQuery(`DELETE FROM hasfeature WHERE id_theater=${req.params.id}`).catch((err) => {
+                res.status(400).json({
+                    message: "error occurred",
+                    error: err
+                });
+                
             });
-            return;
-        }
-    );
-    tool.executeQuery(
-        `UPDATE theaters
-        SET name='${req.body.name}', number_of_seats='${req.body.number_of_seats}'
-        WHERE id=${req.params.id}`
-    ).then((result)=>{
-        tool.executeQuery(`DELETE FROM hasfeature WHERE id_theater=${req.params.id}`).catch((err) => {
+            for(let feature of req.body.features){
+                tool.executeQuery(`INSERT INTO hasfeature(id_feature, id_theater) VALUES (${feature}, ${req.params.id})`).catch(
+                    (err) => {
+                        res.status(400).json({
+                            message: "error occurred",
+                            error: err
+                        });
+                        
+                    }
+                )
+            }
+            res.status(200).json({
+                messsage:`Theater with id=${req.params.id} UPDATED`
+            });
+            
+        }).catch((err)=>{
+            console.log("187");
+            console.log(err);
             res.status(400).json({
-                message: "error occurred",
-                error: err
+                messsage:"An error occurred",
+                error:err
             });
             
         });
-        for(let feature of req.body.features){
-            tool.executeQuery(`INSERT INTO hasfeature(id_feature, id_theater) VALUES (${feature}, ${req.params.id})`).catch(
-                (err) => {
-                    res.status(400).json({
-                        message: "error occurred",
-                        error: err
-                    });
-                    
-                }
-            )
-        }
-        res.status(200).json({
-            messsage:`Theater with id=${req.params.id} UPDATED`
-        });
-        
-    }).catch((err)=>{
-        console.log("187");
-        console.log(err);
-        res.status(400).json({
-            messsage:"An error occurred",
-            error:err
-        });
-        
-    })
-});
-
-router.post('/:theaterId/addseat', /*checkAdmin,*/ (req, res) => {
-    tool.checkExistingInTable("theaters", req.params.theaterId).catch(
+    }).catch(
         (err) => {
             res.status(400).json({
                 message: "error occurred",
                 error: err
             });
-            return;
         }
     );
-    tool.executeQuery(
-        `INSERT INTO seats (number, row, type, removable, id_theater)
-        VALUES(${req.body.number}, ${req.body.row}, '${req.body.type}', ${req.body.removable}, ${req.params.theaterId})`
-    ).then((result)=>{
-        res.status(200).json({
-            message:"Seats added"
-        });
-        
-    }).catch((err)=>{
-        console.log("207");
-        console.log(err);
-        res.status(400).json({
-            messsage:"An error occurred",
-            error:err
-        });
-        
-    })
+});
+
+router.post('/:theaterId/addseat', /*checkAdmin,*/ (req, res) => {
+    tool.checkExistingInTable("theaters", req.params.theaterId).then((result) => {
+        tool.executeQuery(
+            `INSERT INTO seats (number, row, type, removable, id_theater)
+            VALUES(${req.body.number}, ${req.body.row}, '${req.body.type}', ${req.body.removable}, ${req.params.theaterId})`
+        ).then((result)=>{
+            res.status(200).json({
+                message:"Seats added"
+            });
+            
+        }).catch((err)=>{
+            console.log("207");
+            console.log(err);
+            res.status(400).json({
+                messsage:"An error occurred",
+                error:err
+            });
+            
+        })
+    }).catch(
+        (err) => {
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+        }
+    );
 });
 
 router.delete('/:theaterId/removeseat/:seatId', /*checkAdmin,*/ (req, res)=>{
@@ -251,7 +252,7 @@ router.delete('/:theaterId/removeseat/:seatId', /*checkAdmin,*/ (req, res)=>{
                 message: "error occurred",
                 error: `No seat with id=${req.params.seatId} and id_theater=${req.params.theaterId} found`
             });
-            
+            return;
         }
         tool.executeQuery(`DELETE FROM seats WHERE id=${req.params.seatId} AND id_theater=${req.params.theaterId}`)
         .then((result)=>{
@@ -319,7 +320,19 @@ router.put('/:theaterId/updateseat/:seatId', /*checkAdmin,*/ (req, res) => {
 
 
 router.get('/seats/:theaterId', /*checkUser,*/ (req, res) => {
-    tool.checkExistingInTable("theaters", req.params.theaterId).catch(
+    tool.checkExistingInTable("theaters", req.params.theaterId).then((result) => {
+        tool.executeQuery(
+            `SELECT * FROM seats WHERE id_theater=${req.params.theaterId}`
+        ).then((res1)=>{
+            res.status(200).send(res1.rows);
+            
+        }).catch((err)=>{
+            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
+        })
+    }).catch(
         (err) => {
             res.status(400).json({
                 message: "error occurred",
@@ -328,18 +341,6 @@ router.get('/seats/:theaterId', /*checkUser,*/ (req, res) => {
             return;
         }
     );
-    tool.executeQuery(
-        `SELECT * FROM seats WHERE id_theater=${req.params.theaterId}`
-    ).then((res1)=>{
-        res.status(200).send(res1.rows);
-        
-    }).catch((err)=>{
-        res.status(400).json({
-            message: "error occurred",
-            error: err
-        });
-        
-    })
 });
 
 module.exports = router;

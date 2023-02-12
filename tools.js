@@ -43,7 +43,8 @@ module.exports.parseJwt = function(token) {
 
 module.exports.checkExistingInTable = function(table, id) {
     return new Promise((resolve, reject) => {
-        if(table != "shows" && table != "users" && table != "tickets" && table != "movies" && table != "theaters" && table != "ratings", table!="seats"){
+        //console.log(table !== "shows" && table !== "users" && table !== "tickets" && table !== "movies" && table !== "theaters" && table !== "ratings" && table!=="seats");
+        if(table !== "shows" && table !== "users" && table !== "tickets" && table !== "movies" && table !== "theaters" && table !== "ratings" && table!=="seats"){
             reject(`Table ${table} doesn't exist`);
         }
         this.executeQuery(`SELECT * FROM ${table} WHERE id=${id}`).then(

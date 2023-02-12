@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
     tool.executeQuery(`SELECT * FROM shows s 
     JOIN movies m ON m.id=s.id_movie
     JOIN theaters t ON t.id=s.id_theater`).then((result) => {
-        res.send(result.rows)
+        res.send(result.rows);
     }).catch((err) => {
         res.status(400).json({
             message: "error occurred",
@@ -61,9 +61,11 @@ router.post('/add', (req, res) => {
             message: "new show created",
             lastId: result.rows[0].id
         });
+        return;
     }).catch((err) => {
         console.log(err);
         res.status(400).send(err);
+        return;
     })
 });
 
