@@ -75,7 +75,7 @@ router.get('/ofuser', /*checkUser,*/ (req, res) => {
         JOIN theaters tr ON tr.id=s.id_theater
         JOIN movies m ON m.id=s.id_movie
         JOIN seats st ON st.id=t.id_seat
-        WHERE t.id=${userData.id}`
+        WHERE t.id_user=${userData.id}`
     ).then((result) => {
         res.status(200).send(
             result.rows
@@ -147,7 +147,6 @@ router.post('/add', /*checkAdmin,*/ (req, res) => {
         });
         return;
     }
-    console.log(req.body.price);
     tool.executeQuery(
         `INSERT INTO tickets (price, id_seat, id_user, id_show)
         VALUES('${req.body.price}', '${req.body.id_seat}', '${userData.id}', ${req.body.id_show}) 
