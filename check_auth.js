@@ -10,25 +10,29 @@ function checkAuth (req, res) {
             req.userData = token;
             return verified;
         } else {
-            return res.status(401).json({message: "Authentication failed"});  
+            return false;  
         }
     } catch(err){
-        return res.status(401).json({message: "Authentication failed"});
+        return false;
     }
 };
 
 module.exports.checkAdmin = (req, res, next) => {
     let verified = checkAuth(req, res);
-    if(!verified.isAdmin || !verified){
-        return res.status(401).json({message: "Admin area only"});
-    } else {
+    if(verified && verified.isAdmin){
         next();
+    } else {
+        return res.status(401).json({message: "Admin area only"});
     }
 };
 
 module.exports.checkUser = (req, res, next) => {
-    if(checkAuth(req, res))
+    console.log(checkAuth(req, res));
+    if(checkAuth(req, res)){
         next();
+    } else {
+        res.status(401).json({message: "Authentication failed"});
+    }
 }
 
 
