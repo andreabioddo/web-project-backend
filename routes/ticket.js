@@ -61,10 +61,13 @@ router.post('/checkqr/:idShow', /*checkAdmin,*/ (req, res) => {
 router.get('/ofuser', /*checkUser,*/ (req, res) => {
     let userData = returnJWTData(req.headers.authorization);
     tool.executeQuery(
-        `SELECT t.id, t.price, u.name, s.date, s.time 
+        `SELECT t.id, t.price, u.name, s.date, s.time, m.name as moviename, tr.name as theatername, st.number as seatnumber, st.row as row
         FROM tickets t
         JOIN users u ON u.id=t.id_user
         JOIN shows s ON s.id=t.id_show
+        JOIN theaters tr ON tr.id=s.id_theater
+        JOIN movies m ON m.id=s.id_movie
+        JOIN seats st ON st.id=t.id_seat
         WHERE t.id=${userData.id}`
     ).then((result) => {
         res.status(200).send(
@@ -80,10 +83,13 @@ router.get('/ofuser', /*checkUser,*/ (req, res) => {
 router.get('/:id', /*checkUser,*/ (req, res) => {
     tool.checkExistingInTable("tickets", req.params.id).then((result) => {
         tool.executeQuery(
-            `SELECT t.id, t.price, u.name, s.date, s.time 
+            `SELECT t.id, t.price, u.name, s.date, s.time, m.name as moviename, tr.name as theatername, st.number as seatnumber, st.row as row
             FROM tickets t
             JOIN users u ON u.id=t.id_user
             JOIN shows s ON s.id=t.id_show
+            JOIN theaters tr ON tr.id=s.id_theater
+            JOIN movies m ON m.id=s.id_movie
+            JOIN seats st ON st.id=t.id_seat
             WHERE t.id=${req.params.id}`
         ).then((result) => {
             res.status(200).send(
@@ -107,10 +113,13 @@ router.get('/:id', /*checkUser,*/ (req, res) => {
 /** Return an array of tickets */
 router.get('/', /*checkAdmin,*/ (req, res) => {
     tool.executeQuery(
-        `SELECT t.id, t.price, u.name, s.date, s.time FROM tickets as t
-         JOIN users as u on u.id = t.id_user
-         JOIN shows as sh on sh.id = t.id_show
-         JOIN seats as st on st.id = t.id_seat`
+        `SELECT t.id, t.price, u.name, s.date, s.time, m.name as moviename, tr.name as theatername, st.number as seatnumber, st.row as row
+        FROM tickets t
+        JOIN users u ON u.id=t.id_user
+        JOIN shows s ON s.id=t.id_show
+        JOIN theaters tr ON tr.id=s.id_theater
+        JOIN movies m ON m.id=s.id_movie
+        JOIN seats st ON st.id=t.id_seat`
     ).then((result) => {
         res.status(200).send(
             result.rows
@@ -132,6 +141,24 @@ router.post('/add', /*checkAdmin,*/ (req, res) => {
             message: "new ticket created",
             lastId: result.rows[0].id
         });
+    }).catch((err) => {
+        console.log(err);
+        res.status(400).send(err);
+    })
+});
+
+router.delete('/:id', /*checkAdmin,*/ (req, res) => {
+    tool.checkExistingInTable("tickets", req.params.id).then((result) => {
+        tool.executeQuery(
+            `DELETE FROM tickets WHERE id=${req.params.id}`
+        ).then((result) => {
+            res.status(200).json({
+                message: `Ticket with id=${req.params.id} DELETED`
+            });
+        }).catch((err) => {
+            console.log(err);
+            res.status(400).send(err);
+        })
     }).catch((err) => {
         console.log(err);
         res.status(400).send(err);
