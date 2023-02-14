@@ -147,9 +147,10 @@ router.post('/add', /*checkAdmin,*/ (req, res) => {
         });
         return;
     }
+    console.log(req.body.price);
     tool.executeQuery(
         `INSERT INTO tickets (price, id_seat, id_user, id_show)
-        VALUES('${req.body.price}', '${req.body.id_seat}', '${userData.id_user}', ${req.body.id_show}) 
+        VALUES('${req.body.price}', '${req.body.id_seat}', '${userData.id}', ${req.body.id_show}) 
         RETURNING id`
     ).then((result) => {
         res.status(200).json({
