@@ -60,6 +60,13 @@ router.post('/checkqr/:idShow', /*checkAdmin,*/ (req, res) => {
 
 router.get('/ofuser', /*checkUser,*/ (req, res) => {
     let userData = returnJWTData(req.headers.authorization);
+    if(!userData){
+        res.status(400).json({
+            message: "error occurred",
+            error: "Your token is not valid"
+        });
+        return;
+    }
     tool.executeQuery(
         `SELECT t.id, t.price, u.name, s.date, s.time, m.name as moviename, tr.name as theatername, st.number as seatnumber, st.row as row
         FROM tickets t
@@ -133,6 +140,13 @@ router.get('/', /*checkAdmin,*/ (req, res) => {
 /**Add an user taken the details from the body of the request. It return a message and the last id*/
 router.post('/add', /*checkAdmin,*/ (req, res) => {
     let userData = returnJWTData(req.headers.authorization);
+    if(!userData){
+        res.status(400).json({
+            message: "error occurred",
+            error: "Your token is not valid"
+        });
+        return;
+    }
     tool.executeQuery(
         `INSERT INTO tickets (price, id_seat, id_user, id_show)
         VALUES('${req.body.price}', '${req.body.id_seat}', '${userData.id_user}', ${req.body.id_show}) 

@@ -34,6 +34,13 @@ router.get('/:movieId', /*checkAuth.checkUser,*/ (req, res) => {
 router.post('/:movieId/add', /*checkAuth.checkUser,*/ (req, res) => {
     tool.checkExistingInTable("movies", req.params.movieId).then((result) => {
         let userData = checkAuth.returnJWTData(req.headers.authorization);
+        if(!userData){
+            res.status(400).json({
+                message: "error occurred",
+                error: "Your token is not valid"
+            });
+            return;
+        }
         tool.executeQuery(`
             INSERT INTO ratings(stars, review, id_user, id_movie)
             VALUES(${req.body.stars}, '${req.body.review}', ${userData.id}, ${req.params.movieId})

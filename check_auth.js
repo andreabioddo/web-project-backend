@@ -33,6 +33,10 @@ module.exports.checkUser = (req, res, next) => {
 
 
 module.exports.returnJWTData = function(authorization){
-    const token = authorization;//take the token from the header
-    return jwt.verify(token, cfg.auth.jwt_key);
+    if(authorization != null){
+        const token = authorization;//take the token from the header
+        return jwt.verify(token, cfg.auth.jwt_key);
+    } else {
+        return false;
+    }
 }
