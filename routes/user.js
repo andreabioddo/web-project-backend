@@ -7,7 +7,7 @@ const checkAuth = require('../check_auth');
 const { checkInjection, hashPassword } = require('../middleware');
 
 /** Return an array of users */
-router.get('/', /*checkAuth.checkAdmin,*/ (req, res) => {
+router.get('/', checkAuth.checkAdmin, (req, res) => {
     tool.executeQuery(
         `SELECT id, name, email, isadmin FROM users`
     ).then((result) => {
@@ -21,7 +21,7 @@ router.get('/', /*checkAuth.checkAdmin,*/ (req, res) => {
 });
 
 
-router.put('/updateuser/:id', /*checkAuth.checkAdmin,*/ (req, res) => {
+router.put('/updateuser/:id', checkAuth.checkAdmin, (req, res) => {
     tool.checkExistingInTable("users", req.params.id).then((result) => {
         tool.executeQuery(
             `UPDATE users 
@@ -47,7 +47,7 @@ router.put('/updateuser/:id', /*checkAuth.checkAdmin,*/ (req, res) => {
 });
 
 /** Return a json with the detail of the user with id=id given as param*/
-router.get('/:id', /*checkAuth.checkAdmin,*/ (req, res) => {
+router.get('/:id', checkAuth.checkAdmin, (req, res) => {
     tool.checkExistingInTable("users", req.params.id).then((result) => {
         tool.executeQuery(
             `SELECT id, name, email, isadmin FROM users WHERE id=${req.params.id}`
@@ -88,7 +88,7 @@ router.post('/register', hashPassword, (req, res) => {
 });
 
 
-router.delete('/:id', /*checkAuth.checkAdmin,*/ (req, res) => {
+router.delete('/:id', checkAuth.checkAdmin, (req, res) => {
     tool.checkExistingInTable("users", req.params.id).then((result) => {
         tool.executeQuery(`DELETE FROM users WHERE id=${req.params.id}`)
         .then((result)=>{
