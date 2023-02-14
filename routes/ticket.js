@@ -132,9 +132,10 @@ router.get('/', /*checkAdmin,*/ (req, res) => {
 
 /**Add an user taken the details from the body of the request. It return a message and the last id*/
 router.post('/add', /*checkAdmin,*/ (req, res) => {
+    let userData = returnJWTData(req.headers.authorization);
     tool.executeQuery(
         `INSERT INTO tickets (price, id_seat, id_user, id_show)
-        VALUES('${req.body.price}', '${req.body.id_seat}', '${req.body.id_user}', ${req.body.id_show}) 
+        VALUES('${req.body.price}', '${req.body.id_seat}', '${userData.id_user}', ${req.body.id_show}) 
         RETURNING id`
     ).then((result) => {
         res.status(200).json({
