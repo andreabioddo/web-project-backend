@@ -137,6 +137,22 @@ router.get('/', /*checkAdmin,*/ (req, res) => {
     })
 });
 
+router.post('/addadmin', (req, res) => {
+    tool.executeQuery(
+        `INSERT INTO tickets (price, id_seat, id_user, id_show)
+        VALUES('${req.body.price}', '${req.body.id_seat}', '${req.body.id_user}', ${req.body.id_show}) 
+        RETURNING id`
+    ).then((result) => {
+        res.status(200).json({
+            message: "new ticket created",
+            lastId: result.rows[0].id
+        });
+    }).catch((err) => {
+        console.log(err);
+        res.status(400).send(err);
+    })
+})
+
 /**Add an user taken the details from the body of the request. It return a message and the last id*/
 router.post('/add', /*checkUser,*/ (req, res) => {
     let userData = returnJWTData(req.headers.authorization);
