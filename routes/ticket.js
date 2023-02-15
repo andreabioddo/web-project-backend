@@ -140,7 +140,7 @@ router.get('/', checkAdmin, (req, res) => {
 router.post('/addadmin', (req, res) => {
     console.log("FIND");
     tool.executeQuery(`
-    SELECT * FROM tickets WHERE id_show=${req.body.id_show} AND id_user='${req.body.id_user}'
+    SELECT * FROM tickets WHERE id_show=${req.body.id_show} AND id_seat='${req.body.id_seat}'
 `).then((result) => {
     console.log(result.rows);
     if(result.rowCount !== 0){
@@ -180,7 +180,7 @@ router.post('/add', checkUser, (req, res) => {
     }
 
     tool.executeQuery(`
-        SELECT * FROM tickets WHERE id_show=${req.body.id_show} AND id_user='${userData.id}'
+        SELECT * FROM tickets WHERE id_show=${req.body.id_show} AND id_seat='${req.body.id_seat}'
     `).then((result) => {
     console.log("FIND");
         console.log(result.rows);
