@@ -163,19 +163,35 @@ router.post('/add', checkUser, (req, res) => {
         });
         return;
     }
-    tool.executeQuery(
-        `INSERT INTO tickets (price, id_seat, id_user, id_show)
-        VALUES('${req.body.price}', '${req.body.id_seat}', '${userData.id}', ${req.body.id_show}) 
-        RETURNING id`
-    ).then((result) => {
-        res.status(200).json({
-            message: "new ticket created",
-            lastId: result.rows[0].id
-        });
-    }).catch((err) => {
-        console.log(err);
-        res.status(400).send(err);
+
+    tool.executeQuery(`
+        SELECT * FROM ticket WHERE id_show=${req.body.id_show} AND id_user='${userData.id}'
+    `).then((result) => {
+        if(result.rowCount !== 0){
+            tool.executeQuery(
+                `INSERT INTO tickets (price, id_seat, id_user, id_show)
+                VALUES('${req.body.price}', '${req.body.id_seat}', '${userData.id}', ${req.body.id_show}) 
+                RETURNING id`
+            ).then((result) => {
+                res.status(200).json({
+                    message: "new ticket created",
+                    lastId: result.rows[0].id
+                });
+            }).catch((err) => {
+                res.status(400).json({
+                    "message":"Login failed",
+                    "error": error
+                });
+            })
+        } else {
+            res.status(400).json({
+                "message":"Login failed",
+                "error": "Seat already bought"
+            });
+        }
     })
+
+
 });
 
 router.delete('/:id', checkAdmin, (req, res) => {
