@@ -143,7 +143,7 @@ router.post('/addadmin', (req, res) => {
     SELECT * FROM tickets WHERE id_show=${req.body.id_show} AND id_seat='${req.body.id_seat}'
 `).then((result) => {
     console.log(result.rows);
-    if(result.rowCount !== 0){
+    if(result.rowCount === 0){
         tool.executeQuery(
             `INSERT INTO tickets (price, id_seat, id_user, id_show)
             VALUES('${req.body.price}', '${req.body.id_seat}', '${req.body.id_user}', ${req.body.id_show}) 
@@ -184,7 +184,7 @@ router.post('/add', checkUser, (req, res) => {
     `).then((result) => {
     console.log("FIND");
         console.log(result.rows);
-        if(result.rowCount !== 0){
+        if(result.rowCount === 0){
             tool.executeQuery(
                 `INSERT INTO tickets (price, id_seat, id_user, id_show)
                 VALUES('${req.body.price}', '${req.body.id_seat}', '${userData.id}', ${req.body.id_show}) 
