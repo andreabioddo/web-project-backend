@@ -212,15 +212,38 @@ router.post('/add', checkUser, (req, res) => {
 router.delete('/:id', checkAdmin, (req, res) => {
     tool.checkExistingInTable("tickets", req.params.id).then((result) => {
         tool.executeQuery(
-            `DELETE FROM tickets WHERE id=${req.params.id}`
+            `SELECT s.time FROM tickets t JOIN shows s ON s.id=t.id_show`
+
         ).then((result) => {
-            res.status(200).json({
-                message: `Ticket with id=${req.params.id} DELETED`
-            });
+
+            const databaseTime = new Date(`1970-01-01T${result.rows[0]}Z`);
+            const currentTime = new Date(); // create a new Date object for the current time
+
+            const diffInHours = (currentTime - databaseTime) / (1000 * 60 * 60); // get the difference in hours between the current time and the time from the database
+            
+            if (diffInHours <= 1) {
+                res.status(400).json({
+                    "message":"Some error occurred",
+                    "error": "The difference in hours is one or less"
+                });
+            } else {
+                tool.executeQuery(
+                    `DELETE FROM tickets WHERE id=${req.params.id}`
+                ).then((result) => {
+                    res.status(200).json({
+                        message: `Ticket with id=${req.params.id} DELETED`
+                    });
+                }).catch((err) => {
+                    console.log(err);
+                    res.status(400).send(err);
+                })
+            }
+
         }).catch((err) => {
             console.log(err);
             res.status(400).send(err);
         })
+                                                        
     }).catch((err) => {
         console.log(err);
         res.status(400).send(err);
