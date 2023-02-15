@@ -65,7 +65,10 @@ router.post('/add', (req, res) => {
         return;
     }).catch((err) => {
         console.log(err);
-        res.status(400).send(err);
+                    res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
         return;
     })
 });
@@ -80,7 +83,10 @@ router.delete('/:id', (req, res) => {
             });
         }).catch((err) => {
             console.log(err);
-            res.status(400).send(err);
+                        res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
         })
     }).catch(
         (err) => {
@@ -105,7 +111,10 @@ router.put('/:id', (req, res) => {
             });
         }).catch((err) => {
             console.log(err);
-            res.status(400).send(err);
+                        res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
         })
     }).catch(
         (err) => {

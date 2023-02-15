@@ -13,7 +13,10 @@ router.get('/', checkUser, (req, res) => {
         );
     }).catch((err) => {
         console.log(err);
-        res.status(400).send(err);
+                    res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
     })
 });
 
@@ -28,7 +31,10 @@ router.get('/:id', checkUser, (req, res) => {
             );
         }).catch((err) => {
             console.log(err);
-            res.status(400).send(err);
+                        res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
         })
     }).catch(
         (err) => {
@@ -53,7 +59,10 @@ router.post('/add', checkAdmin, (req, res) => {
         });
     }).catch((err) => {
         console.log(err);
-        res.status(400).send(err);
+        res.status(400).json({
+                message: "error occurred",
+                error: err
+        });
     })
 });
 
@@ -69,7 +78,10 @@ router.put('/:id', checkAdmin, (req, res) => {
             });
         }).catch((err) => {
             console.log(err);
-            res.status(400).send(err);
+                        res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
         })
     }).catch(
         (err) => {
@@ -93,7 +105,10 @@ router.get('/show/:movieId', checkUser, (req, res) => {
             res.status(200).send(res1.rows);
         }).catch((err) => {
             console.log(err);
-            res.status(400).send(err);
+                        res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
         })
     }).catch(
         (err) => {
@@ -132,16 +147,25 @@ router.get('/detailseats/:showId', checkUser, (req, res) => {
                     res.status(200).send(finalResult);
                 }).catch((err) => {
                     console.log(err);
-                    res.status(400).send(err);
+                                res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
                 })
             }).catch((err) => {
                 console.log(err);
-                res.status(400).send(err);
+                            res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
             })
     
         }).catch((err) => {
             console.log(err);
-            res.status(400).send(err);
+                        res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
         })
     }).catch(
         (err) => {

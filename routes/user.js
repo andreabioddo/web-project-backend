@@ -16,7 +16,10 @@ router.get('/', checkAdmin, (req, res) => {
         );
     }).catch((err) => {
         console.log(err);
-        res.status(400).send(err);
+                    res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
     })
 });
 
@@ -34,7 +37,10 @@ router.put('/updateuser/:id', checkAdmin, (req, res) => {
             });
         }).catch((err)=> {
             console.log(err);
-            res.status(400).send(err);
+                        res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
         })
     }).catch(
         (err) => {
@@ -57,7 +63,10 @@ router.get('/:id', checkAdmin, (req, res) => {
             );
         }).catch((err) => {
             console.log(err);
-            res.status(400).send(err);
+                        res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
         })
     }).catch(
         (err) => {
@@ -83,7 +92,10 @@ router.post('/register', hashPassword, (req, res) => {
         });
     }).catch((err) => {
         console.log(err);
-        res.status(400).send(err);
+                    res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
     })
 });
 

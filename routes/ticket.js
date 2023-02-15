@@ -54,7 +54,10 @@ router.post('/checkqr/:idShow', checkAdmin, (req, res) => {
         }
     }).catch((err) => {
         console.log(err);
-        res.status(400).send(err);
+                    res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
     })
 })
 
@@ -82,7 +85,10 @@ router.get('/ofuser', checkUser, (req, res) => {
         );
     }).catch((err) => {
         console.log(err);
-        res.status(400).send(err);
+                    res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
     })
 });
 
@@ -104,7 +110,10 @@ router.get('/:id', checkUser, (req, res) => {
             );
         }).catch((err) => {
             console.log(err);
-            res.status(400).send(err);
+                        res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
         })
     }).catch(
         (err) => {
@@ -133,7 +142,10 @@ router.get('/', checkAdmin, (req, res) => {
         );
     }).catch((err) => {
         console.log(err);
-        res.status(400).send(err);
+                    res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
     })
 });
 
@@ -235,18 +247,27 @@ router.delete('/:id', checkUser, (req, res) => {
                     });
                 }).catch((err) => {
                     console.log(err);
-                    res.status(400).send(err);
+                                res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
                 })
             }
 
         }).catch((err) => {
             console.log(err);
-            res.status(400).send(err);
+                        res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
         })
 
     }).catch((err) => {
         console.log(err);
-        res.status(400).send(err);
+                    res.status(400).json({
+                message: "error occurred",
+                error: err
+            });
     })
 });
 

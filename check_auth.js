@@ -5,7 +5,6 @@ function checkAuth (req, res) {
     try {
         const token = req.headers.authorization;//take the token from the header
         const verified = jwt.verify(token, cfg.auth.jwt_key);
-        console.log(verified);
         if(verified){
             req.userData = token;
             return verified;
