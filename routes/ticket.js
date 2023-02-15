@@ -209,7 +209,7 @@ router.post('/add', checkUser, (req, res) => {
     })
 });
 
-router.delete('/:id', checkAdmin, (req, res) => {
+router.delete('/:id', checkUser, (req, res) => {
     tool.checkExistingInTable("tickets", req.params.id).then((result) => {
         tool.executeQuery(
             `SELECT s.time FROM tickets t JOIN shows s ON s.id=t.id_show`
