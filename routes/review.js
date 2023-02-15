@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { checkUser, checkAdmin } = require('../check_auth');
 
-router.get('/:movieId', /*checkUser,*/(req, res) => {
+router.get('/:movieId', checkUser,(req, res) => {
     tool.checkExistingInTable("movies", req.params.movieId).then((result) => {
         tool.executeQuery(`
             SELECT u.id as userid, u.name, r.stars, r.review FROM ratings as r 
@@ -31,7 +31,7 @@ router.get('/:movieId', /*checkUser,*/(req, res) => {
 });
 
 
-router.post('/:movieId/add', /*checkUser,*/(req, res) => {
+router.post('/:movieId/add', checkUser,(req, res) => {
     tool.checkExistingInTable("movies", req.params.movieId).then((result) => {
         let userData = checkAuth.returnJWTData(req.headers.authorization);
         if (!userData) {

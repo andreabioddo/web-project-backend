@@ -3,11 +3,11 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 let cfg = require('../config.json');
-const { /*checkUser,*/ checkAdmin } = require('../check_auth');
+const { checkUser, checkAdmin } = require('../check_auth');
 const { checkInjection, hashPassword } = require('../middleware');
 
 /** Return an array of users */
-router.get('/', /*checkAdmin,*/ (req, res) => {
+router.get('/', checkAdmin, (req, res) => {
     tool.executeQuery(
         `SELECT id, name, email, isadmin FROM users`
     ).then((result) => {
@@ -21,7 +21,7 @@ router.get('/', /*checkAdmin,*/ (req, res) => {
 });
 
 
-router.put('/updateuser/:id', /*checkAdmin,*/ (req, res) => {
+router.put('/updateuser/:id', checkAdmin, (req, res) => {
     tool.checkExistingInTable("users", req.params.id).then((result) => {
         tool.executeQuery(
             `UPDATE users 
@@ -47,7 +47,7 @@ router.put('/updateuser/:id', /*checkAdmin,*/ (req, res) => {
 });
 
 /** Return a json with the detail of the user with id=id given as param*/
-router.get('/:id', /*checkAdmin,*/ (req, res) => {
+router.get('/:id', checkAdmin, (req, res) => {
     tool.checkExistingInTable("users", req.params.id).then((result) => {
         tool.executeQuery(
             `SELECT id, name, email, isadmin FROM users WHERE id=${req.params.id}`
@@ -88,7 +88,7 @@ router.post('/register', hashPassword, (req, res) => {
 });
 
 
-router.delete('/:id', /*checkAdmin,*/ (req, res) => {
+router.delete('/:id', checkAdmin, (req, res) => {
     tool.checkExistingInTable("users", req.params.id).then((result) => {
         tool.executeQuery(`DELETE FROM users WHERE id=${req.params.id}`)
         .then((result)=>{

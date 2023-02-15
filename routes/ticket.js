@@ -1,10 +1,10 @@
 let tool = require('../tools');
 const express = require('express');
-const { returnJWTData, /*checkUser,*/ checkAdmin } = require('../check_auth');
+const { returnJWTData, checkUser, checkAdmin } = require('../check_auth');
 const router = express.Router();
 
 
-router.get('/qrcode/:ticketId', /*checkUser,*/ (req, res) => {
+router.get('/qrcode/:ticketId', checkUser, (req, res) => {
     tool.checkExistingInTable("tickets", req.params.ticketId).then((result) => {
         let code = tool.createTicketQR(result.rows[0].id_user, result.rows[0].id_show, result.rows[0].id_seat, req.params.ticketId);
         res.status(200).json(
@@ -21,7 +21,7 @@ router.get('/qrcode/:ticketId', /*checkUser,*/ (req, res) => {
 });
 
 
-router.post('/checkqr/:idShow', /*checkAdmin,*/ (req, res) => {
+router.post('/checkqr/:idShow', checkAdmin, (req, res) => {
     let decodedData = tool.decodeTicketQR(req.body.qrcode);
     tool.executeQuery(
         `SELECT * FROM tickets 
@@ -58,7 +58,7 @@ router.post('/checkqr/:idShow', /*checkAdmin,*/ (req, res) => {
     })
 })
 
-router.get('/ofuser', /*checkUser,*/ (req, res) => {
+router.get('/ofuser', checkUser, (req, res) => {
     let userData = returnJWTData(req.headers.authorization);
     if(!userData){
         res.status(400).json({
@@ -87,7 +87,7 @@ router.get('/ofuser', /*checkUser,*/ (req, res) => {
 });
 
 /** Return a json with the detail of the user with id=id given as param*/
-router.get('/:id', /*checkUser,*/ (req, res) => {
+router.get('/:id', checkUser, (req, res) => {
     tool.checkExistingInTable("tickets", req.params.id).then((result) => {
         tool.executeQuery(
             `SELECT t.id, t.price, u.name, s.date, s.time, m.name as moviename, tr.name as theatername, st.number as seatnumber, st.row as row
@@ -118,7 +118,7 @@ router.get('/:id', /*checkUser,*/ (req, res) => {
 
 
 /** Return an array of tickets */
-router.get('/', /*checkAdmin,*/ (req, res) => {
+router.get('/', checkAdmin, (req, res) => {
     tool.executeQuery(
         `SELECT t.id, t.price, u.name, s.date, s.time, m.name as moviename, tr.name as theatername, st.number as seatnumber, st.row as row
         FROM tickets t
@@ -154,7 +154,7 @@ router.post('/addadmin', (req, res) => {
 })
 
 /**Add an user taken the details from the body of the request. It return a message and the last id*/
-router.post('/add', /*checkUser,*/ (req, res) => {
+router.post('/add', checkUser, (req, res) => {
     let userData = returnJWTData(req.headers.authorization);
     if(!userData){
         res.status(400).json({
@@ -178,7 +178,7 @@ router.post('/add', /*checkUser,*/ (req, res) => {
     })
 });
 
-router.delete('/:id', /*checkAdmin,*/ (req, res) => {
+router.delete('/:id', checkAdmin, (req, res) => {
     tool.checkExistingInTable("tickets", req.params.id).then((result) => {
         tool.executeQuery(
             `DELETE FROM tickets WHERE id=${req.params.id}`
