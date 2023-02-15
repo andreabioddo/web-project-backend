@@ -1,7 +1,7 @@
 let tool = require('../tools');
 const express = require('express');
 const router = express.Router();
-const { checkUser, checkAdmin } = require('../check_auth');
+const { checkUser, returnJWTData } = require('../check_auth');
 
 router.get('/:movieId', checkUser,(req, res) => {
     tool.checkExistingInTable("movies", req.params.movieId).then((result) => {
@@ -33,7 +33,7 @@ router.get('/:movieId', checkUser,(req, res) => {
 
 router.post('/:movieId/add', checkUser,(req, res) => {
     tool.checkExistingInTable("movies", req.params.movieId).then((result) => {
-        let userData = checkAuth.returnJWTData(req.headers.authorization);
+        let userData = returnJWTData(req.headers.authorization);
         if (!userData) {
             res.status(400).json({
                 message: "error occurred",
@@ -63,7 +63,6 @@ router.post('/:movieId/add', checkUser,(req, res) => {
                     });
                 })
             } else {
-                console.log(err);
                 res.status(400).json({
                     message: "error occurred",
                     error: `${userData.id} has never saw the movie with id=${req.params.movieId}`
