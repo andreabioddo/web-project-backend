@@ -138,19 +138,34 @@ router.get('/', checkAdmin, (req, res) => {
 });
 
 router.post('/addadmin', (req, res) => {
-    tool.executeQuery(
-        `INSERT INTO tickets (price, id_seat, id_user, id_show)
-        VALUES('${req.body.price}', '${req.body.id_seat}', '${req.body.id_user}', ${req.body.id_show}) 
-        RETURNING id`
-    ).then((result) => {
-        res.status(200).json({
-            message: "new ticket created",
-            lastId: result.rows[0].id
+    console.log("FIND");
+    tool.executeQuery(`
+    SELECT * FROM tickets WHERE id_show=${req.body.id_show} AND id_user='${req.body.id_user}'
+`).then((result) => {
+    console.log(result.rows);
+    if(result.rowCount !== 0){
+        tool.executeQuery(
+            `INSERT INTO tickets (price, id_seat, id_user, id_show)
+            VALUES('${req.body.price}', '${req.body.id_seat}', '${req.body.id_user}', ${req.body.id_show}) 
+            RETURNING id`
+        ).then((result) => {
+            res.status(200).json({
+                message: "new ticket created",
+                lastId: result.rows[0].id
+            });
+        }).catch((err) => {
+            res.status(400).json({
+                "message":"some error occurred",
+                "error": error
+            });
+        })
+    } else {
+        res.status(400).json({
+            "message":"Some error occurred",
+            "error": "Seat already bought"
         });
-    }).catch((err) => {
-        console.log(err);
-        res.status(400).send(err);
-    })
+    }
+})
 })
 
 /**Add an user taken the details from the body of the request. It return a message and the last id*/
@@ -165,8 +180,10 @@ router.post('/add', checkUser, (req, res) => {
     }
 
     tool.executeQuery(`
-        SELECT * FROM ticket WHERE id_show=${req.body.id_show} AND id_user='${userData.id}'
+        SELECT * FROM tickets WHERE id_show=${req.body.id_show} AND id_user='${userData.id}'
     `).then((result) => {
+    console.log("FIND");
+        console.log(result.rows);
         if(result.rowCount !== 0){
             tool.executeQuery(
                 `INSERT INTO tickets (price, id_seat, id_user, id_show)
@@ -179,19 +196,17 @@ router.post('/add', checkUser, (req, res) => {
                 });
             }).catch((err) => {
                 res.status(400).json({
-                    "message":"Login failed",
+                    "message":"Some error occurred",
                     "error": error
                 });
             })
         } else {
             res.status(400).json({
-                "message":"Login failed",
+                "message":"Some error occurred",
                 "error": "Seat already bought"
             });
         }
     })
-
-
 });
 
 router.delete('/:id', checkAdmin, (req, res) => {
