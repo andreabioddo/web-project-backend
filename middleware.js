@@ -49,10 +49,11 @@ module.exports.checkXSS = function (req, res, next) {
 
 module.exports.hashPassword = function(req, res, next){
     if(!req.body.password){
-        res.status(400).json({"error":"passowrd filed is missing"});
+        res.status(400).json({"message":"registartion failed", "error":"passowrd filed is missing"});
+    } else {
+        hashText(req.body.password).then((result) => {
+            req.body.password = result;
+            next();
+        }).catch((err) => {res.status(400).json({"error":err})})
     }
-    hashText(req.body.password).then((result) => {
-        req.body.password = result;
-        next();
-    }).catch((err) => {res.status(400).json({"error":err})})
 }
